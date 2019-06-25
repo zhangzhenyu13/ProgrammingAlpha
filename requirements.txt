@@ -1,0 +1,11 @@
+numpy
+sumy
+sumeval
+textblob
+bert-serving-server
+bert-serving-client
+tensorflow
+tensorflow-cpu
+pytorch
+scikit-learn
+

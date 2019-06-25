@@ -1,0 +1,26 @@
+refer to ConigData dir for detailed configs of each service
+
+request url "host:port/methodCore"
+and the post method body is defined as below
+
+reuqest body is as below:
+{"posts":[{"Id":1,"text":"hi, world!"},{"Id":2,"text":"How is it?"}],"question":"Some greetings?"}
+where posts contains a list of processed posts with id and text fields only, and question is a pre-processed str
+
+
+
+the response body is as below:
+[
+    {
+        "Id": 1,
+        "dist": 1,
+        "prob": 2.3644378185272217
+    },
+    {
+        "Id": 2,
+        "dist": 1,
+        "prob": 2.131779670715332
+    }
+]
+
+where each element is representing the post id and relative dist and prob of the dist.
