@@ -229,8 +229,10 @@ class TextGeneratorModel(object):
 
     def use_device(self):
         from onmt.utils.misc import use_gpu
-        gpu=use_gpu(self.opt)
+        from torch import cuda
+        gpu=use_gpu(self.opt) and cuda.is_available()
         gpu_id=self.gpu_id
+        
         if gpu and gpu_id is not None:
             device = torch.device("cuda", gpu_id)
         elif gpu and not gpu_id:
@@ -239,6 +241,7 @@ class TextGeneratorModel(object):
             device = torch.device("cpu")
 
         self.device=device
+        print("gpu: {}, gpu_id: {}, device: {}".format(gpu, gpu_id, device))
 
         self.transformer.to(device)
         if self.model_opt.model_dtype == 'fp16':
