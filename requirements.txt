@@ -8,4 +8,6 @@ tensorflow
 tensorflow-cpu
 pytorch
 scikit-learn
-pytorch_pretrained_bertn
+pytorch_pretrained_bert
+texar
+
