@@ -1,7 +1,7 @@
 # coding=utf-8
 import json
 
-from alphaservices.HTTPServers.http import AlphaHTTPProxy
+from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
 from programmingalpha.DocSearchEngine.entity.post import PostJSONEncoder2
 from programmingalpha.DocSearchEngine.entity.query import Query
 
@@ -11,7 +11,6 @@ class DocSearcherHTTPProxy(AlphaHTTPProxy):
         AlphaHTTPProxy.__init__(self, config_file)
 
     def processCore(self, data):
-        print(data)
 
         title = data["title"]
         size = data["size"]
