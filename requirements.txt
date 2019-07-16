@@ -10,7 +10,6 @@ pytorch
 scikit-learn
 pytorch_pretrained_bert
 texar
-elastcisearch
 flask_json
 flask_cors
 flask_compress
@@ -18,3 +17,5 @@ pyentrp
 spacy
 configargparse
 torchtext
+elasticsearch==5.5.3
+
