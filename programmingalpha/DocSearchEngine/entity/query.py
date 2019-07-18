@@ -13,6 +13,7 @@ import numpy as np
 
 class Query:
     def __init__(self, title, body='', tag_list=None, created_date='', num_works=20):
+
         self.title = title
         self.body = body
         self.tag_list = tag_list

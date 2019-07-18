@@ -1,0 +1,55 @@
+{
+    "models_root": "/home/LAB/zhangzy/ProjectModels/answerNets/",
+    "models": [
+        {
+            "id": 100,
+            "model": "translate_model.pt",
+            "timeout": 600,
+            "on_timeout": "to_cpu",
+            "load": true,
+            "opt": {
+                "fp32": false,
+                "avg_raw_probs": false, 
+                "data_type": "text", 
+                "src": "dummy_src", 
+                "src_dir": "", 
+                "tgt": null,
+                "shard_size": 1000000,
+                "output": "pred.txt", 
+                "report_bleu": false,
+                "report_rouge": false,
+                "report_time": true,
+                "dynamic_dict": true,
+                "share_vocab": true,
+                "random_sampling_topk": 1, 
+                "random_sampling_temp": 1.0, 
+                "seed": 829, 
+                "beam_size": 10, 
+                "min_length": 10,
+                "max_length": 150,
+                "stepwise_penalty": false,
+                "length_penalty": "avg", 
+                "ratio": -0.0, 
+                "coverage_penalty": "summary", 
+                "alpha": 0.0,
+                "beta": -0.0,
+                "block_ngram_repeat": 3, 
+                "ignore_when_blocking": [], 
+                "replace_unk": false,
+                "verbose": false,
+                "log_file": "", 
+                "log_file_level": "0", 
+                "attn_debug": false,
+                "dump_beam": "", 
+                "n_best": 1, 
+                "batch_size": 4,
+                "gpu": -1,
+                "sample_rate": 16000, 
+                "window_size": 0.02, 
+                "window_stride": 0.01, 
+                "window": "hamming"
+            }
+
+        }
+    ]
+}

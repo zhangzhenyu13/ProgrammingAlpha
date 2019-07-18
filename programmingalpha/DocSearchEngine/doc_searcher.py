@@ -11,6 +11,7 @@ class DocSearcherHTTPProxy(AlphaHTTPProxy):
         AlphaHTTPProxy.__init__(self, config_file)
 
     def processCore(self, data):
+
         title = data["title"]
         body = data["body"]
         tag_list = data["tag_list"]
@@ -21,6 +22,7 @@ class DocSearcherHTTPProxy(AlphaHTTPProxy):
         query.arrange()
         '''
         post_results = query.get_results()
+
 
         post_json_list = []
         for obj in post_results:
