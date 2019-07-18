@@ -1,9 +1,9 @@
 # coding=utf-8
 import json
 
-from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
 from programmingalpha.DocSearchEngine.entity.post import PostJSONEncoder2
 from programmingalpha.DocSearchEngine.entity.query import Query
+from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
 
 
 class DocSearcherHTTPProxy(AlphaHTTPProxy):
@@ -13,15 +13,17 @@ class DocSearcherHTTPProxy(AlphaHTTPProxy):
     def processCore(self, data):
 
         title = data["title"]
+        body = data["body"]
+        tag_list = data["tag_list"]
         size = data["size"]
+        query = Query(title=title, body=body, tag_list=tag_list)
 
-        query = Query(title=title)
         query.search(size=size)
         query.arrange()
+        '''
         post_results = query.get_results()
 
-        # post_json_list = json.dumps(post_results, cls=PostJSONEncoder2)
-       
+
         post_json_list = []
         for obj in post_results:
             all_text = obj.question_obj.title + ' ' + obj.question_obj.parsed_body
@@ -32,9 +34,10 @@ class DocSearcherHTTPProxy(AlphaHTTPProxy):
 
             dic = {'id': obj.question_obj.es_id, 'text': all_text}
             post_json_list.append(dic)
-        
+
         results = {}
         results['posts'] = post_json_list
         results['question'] = title
-
+        '''
+        results = query.get_origin_results()
         return results

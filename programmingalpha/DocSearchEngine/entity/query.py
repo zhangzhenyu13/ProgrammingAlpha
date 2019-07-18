@@ -12,7 +12,8 @@ import numpy as np
 
 
 class Query:
-    def __init__(self, title, body='', tag_list='', created_date='', num_works=20):
+    def __init__(self, title, body='', tag_list=None, created_date='', num_works=20):
+
         self.title = title
         self.body = body
         self.tag_list = tag_list
@@ -24,6 +25,10 @@ class Query:
     def get_results(self):
         return self.searched_post_list
 
+    def get_origin_results(self):
+        origin_results = [posts.origin_source for posts in self.searched_post_list]
+        return origin_results
+
     def search(self, size=200):
         search_result_list= search_es.search(self.title, size)
         # Post list
@@ -31,6 +36,7 @@ class Query:
         for result in search_result_list:
             result_id = result['_id']
             result_source = result['_source']
+
             # Question
             question = Question(result_id, result_source['question']['Title'], result_source['question']['Body'], result_source['question']['CommentCount'], result_source['question']['Score'], result_source['question']['Tags'], result_source['question']['CreationDate'])
             # Answer list
@@ -43,7 +49,7 @@ class Query:
                 answer_list.append(answer)
 
             # Add Post to post list
-            post_obj_list.append(Post(question, answer_list))
+            post_obj_list.append(Post(question, answer_list, result_source))
 
         self.searched_post_list = post_obj_list
         # 使用ES返回的 _score 值
@@ -237,7 +243,7 @@ class Query:
         self.searched_post_list = sorted(self.searched_post_list, reverse=True)
 
 if __name__ == '__main__':
-    tag_list1 = ['Java', '<java>', 'println']
+    tag_list1 = ['<Java>', '<java>', '<println>']
     tag_list2 = ['<c++>', '<java>', '<python>', 'pycharm']
     tag_list3 = ['<c++>', '<JAVA>', '<python>', 'pycharm']
 
