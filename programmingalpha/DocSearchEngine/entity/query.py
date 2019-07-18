@@ -7,19 +7,26 @@ from programmingalpha.DocSearchEngine.entity.question import Question
 from programmingalpha.DocSearchEngine.retriever import search_es
 from programmingalpha.DocSearchEngine.util import tokenizer
 from programmingalpha.DocSearchEngine.util.preprocessor import PreprocessPostContent
+from multiprocessing import Pool
 import numpy as np
 
 
 class Query:
-    def __init__(self, title, body='', tag_list='', created_date=''):
+    def __init__(self, title, body='', tag_list=None, created_date='', num_works=20):
         self.title = title
         self.body = body
         self.tag_list = tag_list
         self.created_date = created_date
         self.searched_post_list = []
+        # 多线程
+        self.processes =Pool(num_works)
 
     def get_results(self):
         return self.searched_post_list
+
+    def get_origin_results(self):
+        origin_results = [posts.origin_source for posts in self.searched_post_list]
+        return origin_results
 
     def search(self, size=200):
         search_result_list= search_es.search(self.title, size)
@@ -28,6 +35,7 @@ class Query:
         for result in search_result_list:
             result_id = result['_id']
             result_source = result['_source']
+
             # Question
             question = Question(result_id, result_source['question']['Title'], result_source['question']['Body'], result_source['question']['CommentCount'], result_source['question']['Score'], result_source['question']['Tags'], result_source['question']['CreationDate'])
             # Answer list
@@ -40,7 +48,7 @@ class Query:
                 answer_list.append(answer)
 
             # Add Post to post list
-            post_obj_list.append(Post(question, answer_list))
+            post_obj_list.append(Post(question, answer_list, result_source))
 
         self.searched_post_list = post_obj_list
         # 使用ES返回的 _score 值
@@ -71,8 +79,9 @@ class Query:
         return ret
 
     def calculate_title_relevance(self):
-        for post in self.searched_post_list:
-            post.set_title_relevance(self.__calculate_a_title_relevance(post.question_obj))
+        self.processes.map_async(self.__calculate_a_title_relevance, self.searched_post_list)
+        # for post in self.searched_post_list:
+            # post.set_title_relevance(self.__calculate_a_title_relevance(post.question_obj))
 
     def __calculate_a_tag_relevance(self, question_obj):
         if len(self.tag_list) == 0:
@@ -84,8 +93,9 @@ class Query:
         return ret
 
     def calculate_tag_relevance(self):
-        for post in self.searched_post_list:
-            post.set_tag_relevance(self.__calculate_a_tag_relevance(post.question_obj))
+        self.processes.map_async(self.__calculate_a_tag_relevance, self.searched_post_list)
+        # for post in self.searched_post_list:
+        #     post.set_tag_relevance(self.__calculate_a_tag_relevance(post.question_obj))
 
     def calculate_tf_idf(self, type="question_body"):
         """
@@ -134,7 +144,7 @@ class Query:
 
                 self.searched_post_list[i - 1].set_answer_body_tfidf(sum)
 
-    def __calculate_a_score(self, post_obj, alpha):
+    def __calculate_a_score(self, post_obj, alpha=0.8):
         # 因为调用了ES TFIDF 值，所以要调用question和answer的 parse_body()
         post_obj.question_obj.parse_body() # question的 parse_body()
         comment_count = post_obj.question_obj.comment_count
@@ -148,8 +158,9 @@ class Query:
         return score
 
     def calculate_score(self, alpha=0.8):
-        for post in self.searched_post_list:
-            post.set_score(self.__calculate_a_score(post, alpha))
+        self.processes.map_async(self.__calculate_a_score, self.searched_post_list)
+        # for post in self.searched_post_list:
+        #     post.set_score(self.__calculate_a_score(post, alpha))
 
     def __get_body_code(self):
         code_snippet_list = PreprocessPostContent().get_single_code(self.body)
@@ -231,7 +242,7 @@ class Query:
         self.searched_post_list = sorted(self.searched_post_list, reverse=True)
 
 if __name__ == '__main__':
-    tag_list1 = ['Java', '<java>', 'println']
+    tag_list1 = ['<Java>', '<java>', '<println>']
     tag_list2 = ['<c++>', '<java>', '<python>', 'pycharm']
     tag_list3 = ['<c++>', '<JAVA>', '<python>', 'pycharm']
 

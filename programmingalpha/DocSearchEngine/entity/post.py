@@ -35,7 +35,7 @@ class PostJSONEncoder2(json.JSONEncoder):
 
 class Post:
 
-    def __init__(self, question_obj, answer_obj_list=None):
+    def __init__(self, question_obj, answer_obj_list=None, origin_source=None):
         self.question_obj = question_obj
         self.answer_obj_list = answer_obj_list
         self.title_relevance = 0
@@ -45,6 +45,7 @@ class Post:
         self.score = 0
         self.code_relevance = 0
         self.all_score = 0
+        self.origin_source = origin_source  # ES results
 
     def concat_answer_body(self):
         answer_body_list = []
