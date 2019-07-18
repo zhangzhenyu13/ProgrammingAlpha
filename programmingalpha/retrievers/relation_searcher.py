@@ -354,7 +354,7 @@ class LinkSearcher(object):
 
         return model
 
-    def __init__(self,model_dir,model_name, no_cuda=False, local_rank=-1, fp16=False, do_lower_case=True, batch_size=8):
+    def __init__(self,model_dir,model_name, no_cuda=False, local_rank=-1, fp16=False, do_lower_case=True, batch_size=8, max_seq_len=1500):
         # running paprameters
 
         self.no_cuda=no_cuda
@@ -365,7 +365,7 @@ class LinkSearcher(object):
         ## model parameters
         self.do_lower_case = do_lower_case
         self.batch_size = batch_size
-        self.max_seq_length=1500
+        self.max_seq_length=max_seq_len
 
         buildNet=KnowNet if model_name=='KnowNet' else LinkNet
 
@@ -476,7 +476,7 @@ class KnowAlphaHTTPProxy(AlphaHTTPProxy):
         args=self.args
         self.alphaModel=LinkSearcher(args.model_dir, args.model_name,
                                      no_cuda=args.no_cuda, local_rank=args.local_rank, fp16=args.fp16,
-                                     do_lower_case=args.do_lower_case, batch_size=args.batch_size)
+                                     do_lower_case=args.do_lower_case, batch_size=args.batch_size, max_seq_len=args.max_seq_len)
     def processCore(self, data):
         return recommendTopKPosts(self.alphaModel, data["question"], data["posts"])
 

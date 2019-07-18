@@ -4,3 +4,4 @@ config_file="answerAlphaService.json"
 server=AnswerAlphaHTTPProxy(config_file)
 
 server.start()
+

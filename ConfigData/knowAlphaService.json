@@ -10,5 +10,6 @@
   "do_lower_case": true,
   "no_cuda": true,
   "local_rank": -1,
-  "fp16": false
+  "fp16": false,
+  "max_seq_len": 1500
 }

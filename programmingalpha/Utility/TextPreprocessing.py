@@ -360,6 +360,7 @@ class TextInformationExtraction(object):
 
         return paragraphs
 
+
 def _documentFormatHelper(paragraphs:list):
     document=[]
 

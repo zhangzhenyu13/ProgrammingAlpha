@@ -1,0 +1,11 @@
+{
+  "know_alpha": {
+    "question_len": 300,
+    "answers": 3,
+    "post_len": 1200
+  },
+  "answer_alpha": {
+    "question_len": 150,
+    "answer_len": 1350
+  }
+}
