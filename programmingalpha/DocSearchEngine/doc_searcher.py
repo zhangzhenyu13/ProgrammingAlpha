@@ -12,9 +12,9 @@ class DocSearcherHTTPProxy(AlphaHTTPProxy):
 
     def processCore(self, data):
 
-        title = data["title"]
-        body = data["body"]
-        tag_list = data["tag_list"]
+        title = data["Title"]
+        body = data["Body"]
+        tag_list = data["Tags"]
         size = data["size"]
         query = Query(title=title, body=body, tag_list=tag_list)
 

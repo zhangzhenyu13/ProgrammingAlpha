@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-import configargparse
-
 from flask import Flask, jsonify, request
 from onmt.translate import TranslationServer, ServerModelError
 import os

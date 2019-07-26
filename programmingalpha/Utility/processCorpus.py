@@ -34,9 +34,9 @@ class CorpusProcessor(object):
         if cal_lose:
             after_len = len(" ".join(txt_processed).split())
             lose_rate = after_len / before_len
-            return txt_processed, lose_rate
+            return " ".join(txt_processed), lose_rate
         else:
-            return txt_processed, None
+            return " ".join(txt_processed), None
 
 
 class E2EProcessor(CorpusProcessor):
@@ -61,7 +61,7 @@ class E2EProcessor(CorpusProcessor):
 
         question,_=self._getPreprocess(body, self.question_len)
 
-        question=[title]+question
+        question=title+" "+question
 
         context=[]
         for post in relatives:
@@ -93,7 +93,7 @@ class PairProcessor(CorpusProcessor):
         self.question_len=300
         self.post_len=1200
         self.answers=3
-        print(config_file, self.config, self.config)
+        #print(config_file, self.config, self.config)
         know_alpha_config = self.config.know_alpha
 
         self.question_len = know_alpha_config["question_len"]
@@ -106,18 +106,24 @@ class PairProcessor(CorpusProcessor):
         docs_list=[]
         textExtractor=self.textExtractor
 
+        id=0
         for post in posts:
-            title = " ".join(textExtractor.tokenizer.tokenize(post["Title"]))
-            body,_ =self._getPreprocess(post["Body"],self.question_len)
+
+            title = " ".join(textExtractor.tokenizer.tokenize(post["question"]["Title"]))
+
+            body,_ =self._getPreprocess(post["question"]["Body"],self.question_len)
+
             answers=list(
                 map(lambda ans: ans["Body"], post["answers"])
             )[:self.answers]
 
-            answers_txt= self._getPreprocess(" ".join(answers), self.post_len)
+            answers_txt,_ = self._getPreprocess(" ".join(answers), self.post_len)
+
             docs_list.append({
                 "Id":post["Id"],
                 "text": " ".join([title, body, answers_txt])
             })
+            id+=1
 
         question_title = " ".join(textExtractor.tokenizer.tokenize(question["Title"]))
         question_body,_ = self._getPreprocess(question["Body"], self.question_len)

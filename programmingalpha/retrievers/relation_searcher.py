@@ -11,7 +11,7 @@ import programmingalpha
 import torch
 from torch.utils.data import TensorDataset, DataLoader, SequentialSampler
 from programmingalpha.tokenizers import BertTokenizer
-from programmingalpha.models.InferenceModels import LinkNet, KnowNet
+from programmingalpha.models.InferenceNets.BertInferenceNet import LinkNet, KnowNet
 from pytorch_pretrained_bert import BertConfig
 from tqdm import tqdm
 from multiprocessing import Pool as ProcessPool

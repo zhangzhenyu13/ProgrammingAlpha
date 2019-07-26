@@ -1,10 +1,9 @@
 from programmingalpha.retrievers.relation_searcher import *
-import programmingalpha
 import random
 import argparse
-from tqdm import tqdm, trange
+from tqdm import tqdm
 from pytorch_pretrained_bert.optimization import BertAdam
-from programmingalpha.models.InferenceModels import KnowNet,LinkNet
+from programmingalpha.models.InferenceNets.BertInferenceNet import LinkNet
 from pytorch_pretrained_bert.optimization import WarmupLinearSchedule
 from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler,
                               TensorDataset)

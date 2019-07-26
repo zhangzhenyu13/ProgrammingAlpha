@@ -3,9 +3,6 @@ import json
 from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
 import logging
 from programmingalpha.Utility.processCorpus import E2EProcessor, PairProcessor
-import os
-import programmingalpha
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -16,7 +13,7 @@ class RequesterPortal(object):
         self.port=port
 
     def _getPostUrl(self):
-        post_url = "{}:{}/methodCore".format(self.port, self.host)
+        post_url = "http://{}:{}/methodCore".format(self.host, self.port)
         return  post_url
 
     def request(self, post_data):
@@ -24,7 +21,7 @@ class RequesterPortal(object):
         logger.info("requesting: {}".format(post_url))
 
         postData = json.dumps(post_data)
-        response = requests.post(post_url, postData)
+        response = requests.post(url=post_url, json= postData)
 
         results = json.loads(response.text)
 
@@ -59,15 +56,35 @@ class RequesterServices(AlphaHTTPProxy):
 
 
     def processCore(self, question):
+        #data struct
         assert "Title" in question
+        #question["Title"]=question["title"]
+
         if "Body" not in question:
             question["Body"]=""
             logger.info("no body is available")
-        if "tags" not in question:
+
+
+        if "Tags" not in question:
             question["Tags"]=[]
             logger.info("no tags is available")
 
+
+        #query doc searcher
         docs_list=self.requestDocService(question)
+        print("docs_list-->",docs_list[0].keys(),docs_list)
+
+        #re-strcut question
+        #question["Title"]=question["title"]
+        #question["Body"]=question["body"]
+        #question["Tags"]=question["tag_list"]
+
+        id=0
+        for doc in docs_list:
+            doc["Id"]=id
+            id+=1
+
+        #query doc ranker
         rank_query=self.pair_processor.process(question, docs_list)
 
         ranks_data=self.requestKnowService(rank_query)
@@ -79,15 +96,17 @@ class RequesterServices(AlphaHTTPProxy):
             post=docs[rank["Id"]]
             useful_posts.append(post)
 
-
+        #query answer alpha
         res=self.e2e_processor.process(question, useful_posts)
         question=res["question"]
         context=res["context"]
 
-        qc_data={
-            "id":0,
-            "src": " ".join( [question, "[SEP]", context] )
-        }
+        qc_data=[
+            {
+                "id":0,
+                "src": " ".join( [question, "[SEP]", context] )
+            }
+            ]
 
         answer=self.requestAnswerService(qc_data)
 

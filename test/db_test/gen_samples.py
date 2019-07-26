@@ -8,18 +8,15 @@ import json
 import logging
 from collections import Counter
 import random
+from programmingalpha.Utility import getLogger
 
-logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
-                    datefmt = '%m/%d/%Y %H:%M:%S',
-                    level = logging.INFO)
-
-logger = logging.getLogger(__name__)
+logger=getLogger(__name__)
 
 
 def recoverSent(texts,sep=" ",tokenizer=None):
     text=" ".join(texts)
     if tokenizer is None:
-        text=" ".join(text.split())
+        text=sep.join(text.split())
     else:
         text=sep.join(tokenizer.tokenize(text))
 
@@ -175,22 +172,21 @@ def seq2seqGen():
 
 
     def _constructSrc(record):
-        question=recoverSent(record["question"])
-        context=recoverSent(record["context"],sep="[SEP]").split()[:args.contextLen+len(record["context"])-1]
-        context=" ".join(context).split("[SEP]")
-
-        pos=random.randint(0,len(context))
-        answer=recoverSent(record["answer"]).split()[:args.answerLen]
-        answer=" ".join(answer)
-        context=recoverSent(context[:pos])+answer+recoverSent(context[pos:])
+        question_tokens=recoverSent(record["question"]).split()[:args.questionLen-1]
+        context_tokens=recoverSent(record["context"]).split()[:args.contextLen-1]
+        answer_tokens=recoverSent(record["answer"]).split()[:args.answerLen]
 
         seq_src=[]
-        question_tokens=question.split()[:args.questionLen]
-        context_tokens=context.split()
-
         seq_src+=question_tokens
         seq_src+=["[SEP]"]
-        seq_src+=context_tokens
+
+        if random.randint(0,1)>0:
+            seq_src+=context_tokens
+            seq_src+=answer_tokens
+        else:
+            seq_src+=answer_tokens
+            seq_src+=context_tokens
+        
         seq_src+=["[SEP]"]
 
         return " ".join(seq_src)+"\n"
@@ -229,9 +225,9 @@ if __name__ == '__main__':
     parser.add_argument('--db', type=str, default="corpus")
     parser.add_argument('--maxSize', type=int, default=-1)
     parser.add_argument('--task', type=str, default="seq2seq")
-    parser.add_argument('--contextLen', type=int, default=1000)
+    parser.add_argument('--contextLen', type=int, default=312)
     parser.add_argument('--questionLen', type=int, default=100)
-    parser.add_argument('--answerLen', type=int, default=250)
+    parser.add_argument('--answerLen', type=int, default=100)
 
     args = parser.parse_args()
 

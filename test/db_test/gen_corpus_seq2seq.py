@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 def init(questionsData_G,answersData_G,copy=True):
     global tokenizer,textExtractor
     never_split=("[UNK]", "[SEP]", "[PAD]", "[CLS]", "[MASK]","[NUM]","[CODE]")
-    tokenizer=BertTokenizer(programmingalpha.ModelPath+"knowledgeComprehension/vocab.txt",never_split=never_split)
+    tokenizer=BertTokenizer(programmingalpha.ModelPath+"answerNets/vocab.txt",never_split=never_split)
     textExtractor=InformationAbstrator(args.answerLen,tokenizer)
 
     filter_funcs={
@@ -144,7 +144,6 @@ def _genCore(distances):
             #logger.info("due to low lose rate:{}, under max Len:{}".format(lose_rate,args.answerLen))
             return None
 
-
         #get context
         relative_q_ids=[]
         dists=distances["distances"]
@@ -153,7 +152,7 @@ def _genCore(distances):
             if id not in questionsData:
                 continue
 
-            if len(relative_q_ids)>=10:
+            if len(relative_q_ids)>=args.relative_num:
                 break
 
             if dists[id]==1:
@@ -166,11 +165,8 @@ def _genCore(distances):
         if len(relative_q_ids)==0:
             return None
 
-
-
         context=[]
         for q_id in relative_q_ids:
-
 
             ans=_getBestAnswer(q_id)
             if ans is None:
@@ -256,7 +252,6 @@ def main():
             distance_data.append(path)
     logger.info("loaded {} links data".format(len(distance_data)))
 
-
     questionsDataGlobal, ansIdxGlobal=fetchQuestionData(q_ids_set)
     answersDataGlobal=fetchAnswerData(ansIdxGlobal,questionsDataGlobal.keys())
 
@@ -282,14 +277,17 @@ def main():
     generateContextAnswerCorpusParallel(distance_dataNew,questionsDataGlobal,answersDataGlobal)
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser()
+
     parser.add_argument('--batch_size', type=int, default=100)
 
-    parser.add_argument('--db', type=str, default="crossvalidated")
-    parser.add_argument('--answerLen', type=int, default=250)
-    parser.add_argument('--contextLen', type=int, default=1000)
+    parser.add_argument('--db', type=str, default="stackoverflow")
+    parser.add_argument('--answerLen', type=int, default=100)
+    parser.add_argument('--contextLen', type=int, default=300)
     parser.add_argument('--questionLen', type=int, default=100)
     parser.add_argument('--lose_rate', type=float, default=0.5)
+    parser.add_argument('--relative_num', type=int, default=5)
 
     parser.add_argument('--extractor', type=str, default="lexrankS")
 

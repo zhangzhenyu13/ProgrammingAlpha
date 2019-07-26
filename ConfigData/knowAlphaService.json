@@ -1,7 +1,6 @@
 {
   "port": 12302,
   "listen_ip": "0.0.0.0",
-  "listen_port": 12300,
   "cors": "*",
   "model_name": "KnowNet",
   "model_dir": "/home/LAB/zhangzy/ProjectModels/knowNets/",

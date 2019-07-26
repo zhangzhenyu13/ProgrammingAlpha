@@ -1,40 +1,35 @@
 #!/usr/bin/env bash
-export CUDA_VISIBLE_DEVICES='0,1,2,3'
-python /home/LAB/zhangzy/ProgrammingAlpha/test/text_generation_test/train.py \
+export CUDA_VISIBLE_DEVICES='2'
+layer_num=2
+python ./build_copy_transformer.py \
                    -data /home/LAB/zhangzy/ProjectData/openNMT/answerNetData \
-                   -save_model /home/LAB/zhangzy/ProjectModels/answerNets/model \
-		          -model_dtype fp32 \
-                   -layers 4 \
+                   -save_model /home/LAB/zhangzy/ProjectModels/bertSeq2Seqs/model-L$layer_num \
+                   -layers $layer_num \
                    -rnn_size 768 \
                    -word_vec_size 768 \
-                   -transformer_ff 3072 \
                    -max_grad_norm 0 \
                    -optim adam \
-                   -encoder_type transformer \
-                   -decoder_type transformer \
+                   -seed 13711 \
                    -position_encoding \
-                   -dropout 0\.1 \
+                   -dropout 0\.2 \
                    -param_init 0 \
                    -warmup_steps 8000 \
                    -learning_rate 1e-5 \
                    -decay_method noam \
                    -label_smoothing 0.1 \
                    -adam_beta2 0.998 \
-                   -batch_size 8 \
-                   -valid_batch_size 8 \
+                   -batch_size 6 \
                    -batch_type sents \
-                   -normalization sents \
+                   -normalization tokens \
                    -max_generator_batches 2 \
-                   -train_steps 200000 \
+                   -train_steps 100000 \
                    -valid_steps 500 \
-                   -save_checkpoint_steps 1000 \
-                   -keep_checkpoint 100 \
-                   -tensorboard \
+                   -save_checkpoint_steps 2000 \
+                   -keep_checkpoint 10 \
                    -report_every 50 \
                    -accum_count 8 \
                    -copy_attn \
                    -param_init_glorot \
                    -world_size 1 \
                    -gpu_ranks 0 \
-                   #-tensorboard_log_dir trainCopy.log \
-                   #-train_from
+                   #-share_embeddings \

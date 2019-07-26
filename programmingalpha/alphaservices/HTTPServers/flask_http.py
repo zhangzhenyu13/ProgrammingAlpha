@@ -1,6 +1,7 @@
 from multiprocessing import Process, Event
 import programmingalpha
 import os
+import json
 import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -32,7 +33,10 @@ class AlphaHTTPProxy(Process):
         @as_json
         def encode_query():
             data = request.form if request.form else request.json
-            print("query data--->",data)
+            if type(data)==str:
+                data=json.loads(data)
+            print("query data--->", data)
+
             try:
                 logger.info('new request from %s' % request.remote_addr)
                 return self.processCore(data)

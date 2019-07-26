@@ -1,7 +1,6 @@
 {
   "port": 12303,
   "listen_ip": "0.0.0.0",
-  "listen_port": 12300,
   "cors": "*",
  "model_config": "answerNetModel.json"
 }

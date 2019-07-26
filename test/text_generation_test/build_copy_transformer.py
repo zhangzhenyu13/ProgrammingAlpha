@@ -1,12 +1,10 @@
-from programmingalpha.models.TextGenModels import TextGeneratorModel
+from programmingalpha.models.GenerationNets.BertAnswerNet import TextGeneratorModel
 from pytorch_pretrained_bert import optimization as bertOptimizer
 import numpy as np
 import torch
 from torch import nn
 import random
 import onmt
-import argparse
-import programmingalpha
 import logging
 from onmt.utils.parse import ArgumentParser
 import onmt.opts as opts

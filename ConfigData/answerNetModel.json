@@ -2,8 +2,8 @@
     "models_root": "/home/LAB/zhangzy/ProjectModels/answerNets/",
     "models": [
         {
-            "id": 100,
-            "model": "translate_model.pt",
+            "id": 0,
+            "model": "model_step_23000.pt",
             "timeout": 600,
             "on_timeout": "to_cpu",
             "load": true,
@@ -43,7 +43,7 @@
                 "dump_beam": "", 
                 "n_best": 1, 
                 "batch_size": 4,
-                "gpu": -1,
+                "gpu": 0,
                 "sample_rate": 16000, 
                 "window_size": 0.02, 
                 "window_stride": 0.01, 

@@ -8,15 +8,14 @@ import numpy as np
 
 from programmingalpha.models.rl_utility import  utils,data_utils
 from programmingalpha.models.rl_utility.config_data import eos_token_id, bos_token_id
-from programmingalpha.models.RL_Transformer import BertRLTransformer
-from programmingalpha.models.RL_Transformer import VocabWrapper
+from programmingalpha.models.GenerationNets.BertRLAnswerNet import BertRLTransformer
+from programmingalpha.models.GenerationNets.BertRLAnswerNet import VocabWrapper
 from bert import modeling
 import argparse
 import tqdm
 import logging
 from texar.utils import transformer_utils
 from texar.modules.decoders import transformer_decoders
-from programmingalpha.models.RL_Transformer import EmbedderWrapper
 from bert import optimization
 
 logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
@@ -943,7 +942,6 @@ def train_rl_parallel():
                 helper=helper,
                 mode=tf.estimator.ModeKeys.TRAIN)
         '''
-        from tensorflow.contrib import seq2seq
 
         outputs, sequence_length = decoder(
             memory=encoder_output,

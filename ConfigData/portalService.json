@@ -1,5 +1,5 @@
 {
-  "port": 12366,
+  "port": 12300,
   "listen_ip": "0.0.0.0",
   "doc_searcher_service": {
     "port": 12301,
@@ -13,7 +13,6 @@
     "port": 12303,
     "host": "localhost"
   },
-  "listen_port": 12300,
   "cors": "*",
   "global_config": "global_config.json"
 }
