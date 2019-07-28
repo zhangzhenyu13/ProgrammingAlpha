@@ -3,7 +3,7 @@ export CUDA_VISIBLE_DEVICES='0,1,2,3'
 python /home/LAB/zhangzy/ProgrammingAlpha/test/text_generation_test/train.py \
                    -data /home/LAB/zhangzy/ProjectData/openNMT/answerNetData \
                    -save_model /home/LAB/zhangzy/ProjectModels/answerNets/model \
-		          -model_dtype fp32 \
+		           -model_dtype fp32 \
                    -layers 4 \
                    -rnn_size 768 \
                    -word_vec_size 768 \
@@ -21,7 +21,7 @@ python /home/LAB/zhangzy/ProgrammingAlpha/test/text_generation_test/train.py \
                    -label_smoothing 0.1 \
                    -adam_beta2 0.998 \
                    -batch_size 8 \
-                   -valid_batch_size 8 \
+                   -valid_batch_size 4 \
                    -batch_type sents \
                    -normalization sents \
                    -max_generator_batches 2 \

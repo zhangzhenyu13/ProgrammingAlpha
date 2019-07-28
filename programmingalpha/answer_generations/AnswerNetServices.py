@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from onmt.translate import TranslationServer, ServerModelError
+from programmingalpha.answer_generations .translation_server import TranslationServer, ServerModelError
 import os
 
 from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
