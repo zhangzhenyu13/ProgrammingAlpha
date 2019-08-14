@@ -10,17 +10,19 @@ python /home/LAB/zhangzy/ProgrammingAlpha/test/text_generation_test/train.py \
                    -transformer_ff 3072 \
                    -max_grad_norm 0 \
                    -optim adam \
+                   -pretrained_encoder bert \
                    -encoder_type transformer \
                    -decoder_type transformer \
+                   -input_feed 0 \
                    -position_encoding \
-                   -dropout 0\.1 \
+                   -dropout 1e-1 \
                    -param_init 0 \
                    -warmup_steps 8000 \
                    -learning_rate 1e-5 \
                    -decay_method noam \
                    -label_smoothing 0.1 \
                    -adam_beta2 0.998 \
-                   -batch_size 8 \
+                   -batch_size 16 \
                    -valid_batch_size 4 \
                    -batch_type sents \
                    -normalization sents \

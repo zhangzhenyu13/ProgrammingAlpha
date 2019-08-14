@@ -1,120 +1,22 @@
+"""Training on a single process."""
 import os
 
+import torch
+
 from onmt.inputters.inputter import build_dataset_iter, \
-    load_old_vocab, old_style_vocab
+    load_old_vocab, old_style_vocab, build_dataset_iter_multiple
+#from onmt.model_builder import build_model
+from onmt.utils.optimizers import Optimizer
 from onmt.utils.misc import set_random_seed
 from onmt.trainer import build_trainer
 from onmt.models import build_model_saver
 from onmt.utils.logging import init_logger, logger
 from onmt.utils.parse import ArgumentParser
-from onmt.utils.optimizers import Optimizer
-from programmingalpha.models.GenerationNets.BertAnswerNet import TextGeneratorModel
-from pytorch_pretrained_bert import optimization as bertOptimizer
-import numpy as np
-import torch
-import random
-import onmt
+'''model builder'''
+from .model_builder import build_model
 
-
-#my model
-def buildModelForTrain(model_opt, opt, fields, checkpoint=None):
-    TextGeneratorModel.layer_num=model_opt.layers
-    TextGeneratorModel.drop_out=model_opt.dropout
-    TextGeneratorModel.model_opt=model_opt
-    TextGeneratorModel.opt=opt
-    TextGeneratorModel.fields=fields
-    textGen=TextGeneratorModel()
-
-    if checkpoint is not None:
-        textGen.loadModel(checkpoint=checkpoint)
-    model=textGen.transformer
-
-    logger.info(model)
-    return model
-
-
-def buildOptimizer(model,opts):
-    #configure optimizer
-    random.seed(1237)
-    np.random.seed(7453)
-    torch.manual_seed(13171)
-
-    lr = opts.learning_rate
-
-    param_optimizer = list(model.named_parameters())
-    no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
-    optimizer_grouped_parameters = [
-            {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
-            {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
-            ]
-
-    warmup_proportion=opts.warmup_steps/opts.train_steps
-
-    bert_optimizer = bertOptimizer.BertAdam(params=optimizer_grouped_parameters, lr=lr, warmup=warmup_proportion,
-                                            t_total=opts.train_steps
-                                            )
-
-    optim = onmt.utils.optimizers.Optimizer(
-        bert_optimizer, learning_rate=lr, max_grad_norm=2)
-
-    return optim
-
-def build_loss_compute_test(model, tgt_field, opt, train=True):
-
-    """
-    Returns a LossCompute subclass which wraps around an nn.Module subclass
-    (such as nn.NLLLoss) which defines the loss criterion. The LossCompute
-    object allows this loss to be computed in shards and passes the relevant
-    data to a Statistics object which handles training/validation logging.
-    Currently, the NMTLossCompute class handles all loss computation except
-    for when using a copy mechanism.
-    """
-
-    from onmt.utils.loss import LabelSmoothingLoss,SparsemaxLoss,LogSparsemax,NMTLossCompute
-    from torch import nn
-    #loss
-    tgt_vocab=tgt_field.vocab
-    loss=onmt.modules.CopyGeneratorLossCompute(
-        criterion=onmt.modules.CopyGeneratorLoss(vocab_size=len(tgt_vocab), force_copy=False,
-                    unk_index=tgt_vocab.stoi[tgt_field.unk_token],ignore_index=tgt_vocab.stoi[tgt_field.pad_token], eps=1e-20),
-        generator=(model.module if hasattr(model, 'module') else model).generator,
-        tgt_vocab=tgt_vocab, normalize_by_length=True
-    )
-
-    #build loss
-    device = torch.device("cuda" if onmt.utils.misc.use_gpu(opt) else "cpu")
-
-    padding_idx = tgt_field.vocab.stoi[tgt_field.pad_token]
-    unk_idx = tgt_field.vocab.stoi[tgt_field.unk_token]
-    if opt.copy_attn:
-        criterion = onmt.modules.CopyGeneratorLoss(
-            len(tgt_field.vocab), opt.copy_attn_force,
-            unk_index=unk_idx, ignore_index=padding_idx
-        )
-    elif opt.label_smoothing > 0 and train:
-        criterion = LabelSmoothingLoss(
-            opt.label_smoothing, len(tgt_field.vocab), ignore_index=padding_idx
-        )
-    elif isinstance(model.generator[-1], LogSparsemax):
-        criterion = SparsemaxLoss(ignore_index=padding_idx, reduction='sum')
-    else:
-        criterion = nn.NLLLoss(ignore_index=padding_idx, reduction='sum')
-
-    # if the loss function operates on vectors of raw logits instead of
-    # probabilities, only the first part of the generator needs to be
-    # passed to the NMTLossCompute. At the moment, the only supported
-    # loss function of this kind is the sparsemax loss.
-    use_raw_logits = isinstance(criterion, SparsemaxLoss)
-    loss_gen = model.generator[0] if use_raw_logits else model.generator
-    if opt.copy_attn:
-        compute = onmt.modules.CopyGeneratorLossCompute(
-            criterion, loss_gen, tgt_field.vocab, opt.copy_loss_by_seqlength
-        )
-    else:
-        compute = NMTLossCompute(criterion, loss_gen)
-    compute.to(device)
-
-    return compute
+'''optimizer builders'''
+from .build_optimizers import buildBertOptimizerW
 
 
 def _check_save_model_path(opt):
@@ -141,17 +43,18 @@ def configure_process(opt, device_id):
     set_random_seed(opt.seed, device_id >= 0)
 
 
-def main(opt, device_id):
+def main(opt, device_id, batch_queue=None, semaphore=None):
     # NOTE: It's important that ``opt`` has been validated and updated
     # at this point.
     configure_process(opt, device_id)
     init_logger(opt.log_file)
+    assert len(opt.accum_count) == len(opt.accum_steps), \
+        'Number of accum_count values must match number of accum_steps'
     # Load checkpoint if we resume from a previous training.
     if opt.train_from:
         logger.info('Loading checkpoint from %s' % opt.train_from)
         checkpoint = torch.load(opt.train_from,
                                 map_location=lambda storage, loc: storage)
-
         model_opt = ArgumentParser.ckpt_model_opts(checkpoint["opt"])
         ArgumentParser.update_model_opts(model_opt)
         ArgumentParser.validate_model_opts(model_opt)
@@ -182,8 +85,7 @@ def main(opt, device_id):
                 logger.info(' * %s vocab size = %d' % (sn, len(sf.vocab)))
 
     # Build model.
-    model = buildModelForTrain(model_opt, opt, fields, checkpoint)#build_model(model_opt, opt, fields, checkpoint)
-
+    model = build_model(model_opt, opt, fields, checkpoint)
     n_params, enc, dec = _tally_parameters(model)
     logger.info('encoder: %d' % enc)
     logger.info('decoder: %d' % dec)
@@ -191,10 +93,9 @@ def main(opt, device_id):
     _check_save_model_path(opt)
 
     # Build optimizer.
-    if checkpoint is None:
-        optim = buildOptimizer(model,opt)
-    else:
-        optim=Optimizer.from_opt(model, opt, checkpoint=checkpoint)
+    #optim = Optimizer.from_opt(model, opt, checkpoint=checkpoint)
+    '''replace the original optimizer if necessary'''
+    optim= buildBertOptimizerW(model, model_opt)
 
     # Build model saver
     model_saver = build_model_saver(model_opt, opt, model, fields, optim)
@@ -202,7 +103,32 @@ def main(opt, device_id):
     trainer = build_trainer(
         opt, device_id, model, fields, optim, model_saver=model_saver)
 
-    train_iter = build_dataset_iter("train", fields, opt)
+    if batch_queue is None:
+        if len(opt.data_ids) > 1:
+            train_shards = []
+            for train_id in opt.data_ids:
+                shard_base = "train_" + train_id
+                train_shards.append(shard_base)
+            train_iter = build_dataset_iter_multiple(train_shards, fields, opt)
+        else:
+            if opt.data_ids[0] is not None:
+                shard_base = "train_" + opt.data_ids[0]
+            else:
+                shard_base = "train"
+            train_iter = build_dataset_iter(shard_base, fields, opt)
+
+    else:
+        assert semaphore is not None, \
+            "Using batch_queue requires semaphore as well"
+
+        def _train_iter():
+            while True:
+                batch = batch_queue.get()
+                semaphore.release()
+                yield batch
+
+        train_iter = _train_iter()
+
     valid_iter = build_dataset_iter(
         "valid", fields, opt, is_train=False)
 
@@ -214,6 +140,7 @@ def main(opt, device_id):
     if opt.single_pass and train_steps > 0:
         logger.warning("Option single_pass is enabled, ignoring train_steps.")
         train_steps = 0
+
     trainer.train(
         train_iter,
         train_steps,
@@ -223,3 +150,4 @@ def main(opt, device_id):
 
     if opt.tensorboard:
         trainer.report_manager.tensorboard_writer.close()
+

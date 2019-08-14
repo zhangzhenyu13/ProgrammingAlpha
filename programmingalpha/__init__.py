@@ -1,14 +1,22 @@
 import json
 
 #bert model
-BertBasePath="/home/LAB/zhangzy/ShareModels/uncased_L-12_H-768_A-12/"
-BertLargePath="/home/LAB/zhangzy/ShareModels/uncased_L-24_H-1024_A-16/"
-#openai GPT model
-openAIGPTPath="/home/LAB/zhangzy/ShareModels/openAIGPT/"
-#transformer-XL
-transformerXL="/home/LAB/zhangzy/ShareModels/transformerXL/"
+BertRoot="/home/LAB/zhangzy/ShareModels/bert/"
+BertBaseCased="/home/LAB/zhangzy/ShareModels/bert/base-cased/"
+BertBaseUnCased="/home/LAB/zhangzy/ShareModels/bert/base-uncased/"
+BertLargeCased="/home/LAB/zhangzy/ShareModels/bert/large-cased/"
+BertLargeUnCased="/home/LAB/zhangzy/ShareModels/bert/large-uncased/"
+BertLargeCasedMasking="/home/LAB/zhangzy/ShareModels/bert/large-cased-whole-masking/"
+BertLargeUnCasedMasking="/home/LAB/zhangzy/ShareModels/bert/large-uncased-whole-masking/"
 #gpt-2 model
-GPT2Path="/home/LAB/zhangzy/ShareModels/GPT2/"
+GPT2Base="/home/LAB/zhangzy/ShareModels/gpt-2/base/"
+GPT2Medium="/home/LAB/zhangzy/ShareModels/gpt-2/medium/"
+#XLNet
+XLNetBaseCased="/home/LAB/zhangzy/ShareModels/xlnet/base-cased"
+XLNetLargeCased="/home/LAB/zhangzy/ShareModels/xlnet/large-cased"
+#RoBerta
+RoBertaBase="/home/LAB/zhangzy/ShareModels/roberta/base/"
+RoBertaLarge="/home/LAB/zhangzy/ShareModels/roberta/large/"
 
 #global project path
 ConfigPath="/home/LAB/zhangzy/ProgrammingAlpha/ConfigData/"
@@ -16,14 +24,6 @@ DataCases="/home/LAB/zhangzy/ProgrammingAlpha/dataCases/"
 
 DataPath="/home/LAB/zhangzy/ProjectData/"
 ModelPath="/home/LAB/zhangzy/ProjectModels/"
-
-#embedding
-Glove42="/home/LAB/zhangzy/ShareModels/Embeddings/glove.42B/"
-Glove840="/home/LAB/zhangzy/ShareModels/Embeddings/glove.840B/"
-Glove6="/home/LAB/zhangzy/ShareModels/Embeddings/glove.6B/"
-GloveStack="/home/LAB/zhangzy/ShareModels/Embeddings/stackexchange/"
-Bert768="/home/LAB/zhangzy/ShareModels/Embeddings/bert/"
-openAI768="/home/LAB/zhangzy/ShareModels/Embeddings/openAI/"
 
 
 

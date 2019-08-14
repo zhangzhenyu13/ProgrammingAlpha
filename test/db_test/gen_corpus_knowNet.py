@@ -250,8 +250,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch_size', type=int, default=1000)
     parser.add_argument('--db', type=str, default="crossvalidated")
-    parser.add_argument('--questionLen', type=int, default=250)
-    parser.add_argument('--postLen', type=int, default=1250)
+    parser.add_argument('--questionLen', type=int, default=150)
+    parser.add_argument('--postLen', type=int, default=350)
     parser.add_argument("--answerNum",type=int,default=3)
 
     parser.add_argument('--workers', type=int, default=4)

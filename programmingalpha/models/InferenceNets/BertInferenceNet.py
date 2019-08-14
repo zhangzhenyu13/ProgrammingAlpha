@@ -1,5 +1,6 @@
 from pytorch_pretrained_bert import BertModel
-from pytorch_pretrained_bert.modeling import BertPreTrainedModel,BertEmbeddings,BertEncoder,BertPooler,BertConfig
+#from pytorch_pretrained_bert.modeling import BertPreTrainedModel,BertEmbeddings,BertEncoder,BertPooler,BertConfig
+from pytorch_transformers.modeling_bert import BertConfig, BertModel, BertPooler, BertEncoder, BertEmbeddings
 from torch.nn import CrossEntropyLoss
 from torch import nn
 import torch
@@ -143,83 +144,17 @@ class AttnBertPooler(nn.Module):
         return pooled_output
 
 #LinkNet
-class LinkNet(BertPreTrainedModel):
+class LinkNet(BertModel):
 
     def __init__(self, config, num_labels):
         super(LinkNet, self).__init__(config)
         self.num_labels = num_labels
-        # self.bert = BertModel(config)
-        embeddings = BertEmbeddings(config)
-        self.embeddings = OnmtBertEmbedding(config, embeddings)
-        self.encoder = BertEncoder(config)
-        self.pooler = BertPooler(config)
-
-        self.dropout = nn.Dropout(config.hidden_dropout_prob)
+       
         self.classifier = nn.Linear(config.hidden_size, num_labels)
 
-        self.apply(self.init_bert_weights)
-
-    def forward_1(self, input_ids, token_type_ids=None, attention_mask=None, labels=None):
-        _, pooled_output = self.bert(input_ids, token_type_ids, attention_mask, output_all_encoded_layers=False)
-        pooled_output = self.dropout(pooled_output)
-        logits = self.classifier(pooled_output)
-
-        if labels is not None:
-            loss_fct_classification = CrossEntropyLoss()
-            classfication_loss = loss_fct_classification(logits.view(-1, self.num_labels), labels.view(-1))
-            return classfication_loss
-        else:
-            return logits
-
     def forward(self, input_ids, token_type_ids=None, attention_mask=None, labels=None, head_mask=None):
-        if attention_mask is None:
-            attention_mask = torch.ones_like(input_ids)
-        if token_type_ids is None:
-            token_type_ids = torch.zeros_like(input_ids)
-
-        # We create a 3D attention mask from a 2D tensor mask.
-        # Sizes are [batch_size, 1, 1, to_seq_length]
-        # So we can broadcast to [batch_size, num_heads, from_seq_length, to_seq_length]
-        # this attention mask is more simple than the triangular masking of causal attention
-        # used in OpenAI GPT, we just need to prepare the broadcast dimension here.
-        extended_attention_mask = attention_mask.unsqueeze(1).unsqueeze(2)
-
-        # Since attention_mask is 1.0 for positions we want to attend and 0.0 for
-        # masked positions, this operation will create a tensor which is 0.0 for
-        # positions we want to attend and -10000.0 for masked positions.
-        # Since we are adding it to the raw scores before the softmax, this is
-        # effectively the same as removing these entirely.
-        extended_attention_mask = extended_attention_mask.to(dtype=next(self.parameters()).dtype)  # fp16 compatibility
-        extended_attention_mask = (1.0 - extended_attention_mask) * -10000.0
-
-        # Prepare head mask if needed
-        # 1.0 in head_mask indicate we mask the head
-        # attention_probs has shape bsz x n_heads x N x N
-        # head_mask has shape num_hidden_layers x batch x n_heads x N x N
-        if head_mask is not None:
-            if head_mask.dim() == 1:
-                head_mask = head_mask.unsqueeze(0).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
-                head_mask = head_mask.expand_as(self.config.num_hidden_layers, -1, -1, -1, -1)
-            elif head_mask.dim() == 2:
-                head_mask = head_mask.unsqueeze(1).unsqueeze(-1).unsqueeze(
-                    -1)  # We can specify head_mask for each layer
-            head_mask = head_mask.to(
-                dtype=next(self.parameters()).dtype)  # switch to fload if need + fp16 compatibility
-            head_mask = (1.0 - head_mask)
-        else:
-            head_mask = [None] * self.config.num_hidden_layers
-
-        embedding_output = self.embeddings(input_ids, token_type_ids)
-        encoded_layers = self.encoder(embedding_output,
-                                      extended_attention_mask,
-                                      output_all_encoded_layers=True,
-                                      head_mask=head_mask)
-
-        sequence_output = encoded_layers[-1]
-
-        pooled_output = self.pooler(sequence_output)
-
-        pooled_output = self.dropout(pooled_output)
+        outputs=super(LinkNet, self).forward(input_ids, token_type_ids=None, attention_mask=None, labels=None, head_mask=None)
+        pooled_output=outputs[1]
         logits = self.classifier(pooled_output)
 
         if labels is not None:
@@ -230,56 +165,16 @@ class LinkNet(BertPreTrainedModel):
             return logits
 
 #KnowNet
-class KnowNet(BertPreTrainedModel):
+class KnowNet(BertModel):
     def __init__(self, config,num_labels):
         super(KnowNet, self).__init__(config)
-        embeddings = BertEmbeddings(config)
-        self.embeddings=OnmtBertEmbedding(config,embeddings)
+
         self.attnpooler=AttnBertPooler(config)
-        self.encoder = BertEncoder(config)
-        self.pooler=BertPooler(config)
         self.classifier = nn.Linear(config.hidden_size*2, num_labels)
         self.num_labels=num_labels
-        self.apply(self.init_bert_weights)
 
-    def forward_1(self, input_ids, token_type_ids=None, attention_mask=None, labels=None):
-        if attention_mask is None:
-            attention_mask = torch.ones_like(input_ids)
-        if token_type_ids is None:
-            token_type_ids = torch.zeros_like(input_ids)
 
-        # We create a 3D attention mask from a 2D tensor mask.
-        # Sizes are [batch_size, 1, 1, to_seq_length]
-        # So we can broadcast to [batch_size, num_heads, from_seq_length, to_seq_length]
-        # this attention mask is more simple than the triangular masking of causal attention
-        # used in OpenAI GPT, we just need to prepare the broadcast dimension here.
-        extended_attention_mask = attention_mask.unsqueeze(1).unsqueeze(2)
-
-        # Since attention_mask is 1.0 for positions we want to attend and 0.0 for
-        # masked positions, this operation will create a tensor which is 0.0 for
-        # positions we want to attend and -10000.0 for masked positions.
-        # Since we are adding it to the raw scores before the softmax, this is
-        # effectively the same as removing these entirely.
-        extended_attention_mask = extended_attention_mask.to(dtype=next(self.parameters()).dtype) # fp16 compatibility
-        extended_attention_mask = (1.0 - extended_attention_mask) * -10000.0
-
-        embedding_output = self.embeddings(input_ids, token_type_ids)
-        encoded_layers = self.encoder(embedding_output,
-                                      extended_attention_mask,
-                                      output_all_encoded_layers=False)
-        sequence_output = encoded_layers[-1]
-        pooled_output = self.attnpooler(sequence_output,attention_mask)
-
-        logits = self.classifier(pooled_output)
-
-        if labels is not None:
-            loss_fct_classification = CrossEntropyLoss()
-            classfication_loss = loss_fct_classification(logits.view(-1, self.num_labels), labels.view(-1))
-            return classfication_loss
-        else:
-            return logits
-
-    def forward(self, input_ids, token_type_ids=None, attention_mask=None, labels=None, head_mask=None):
+    def forward(self, input_ids, token_type_ids=None, attention_mask=None, position_ids=None, head_mask=None):
         if attention_mask is None:
             attention_mask = torch.ones_like(input_ids)
         if token_type_ids is None:
@@ -301,27 +196,25 @@ class KnowNet(BertPreTrainedModel):
         extended_attention_mask = (1.0 - extended_attention_mask) * -10000.0
 
         # Prepare head mask if needed
-        # 1.0 in head_mask indicate we mask the head
+        # 1.0 in head_mask indicate we keep the head
         # attention_probs has shape bsz x n_heads x N x N
-        # head_mask has shape num_hidden_layers x batch x n_heads x N x N
+        # input head_mask has shape [num_heads] or [num_hidden_layers x num_heads]
+        # and head_mask is converted to shape [num_hidden_layers x batch x num_heads x seq_length x seq_length]
         if head_mask is not None:
             if head_mask.dim() == 1:
                 head_mask = head_mask.unsqueeze(0).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
-                head_mask = head_mask.expand_as(self.config.num_hidden_layers, -1, -1, -1, -1)
+                head_mask = head_mask.expand(self.config.num_hidden_layers, -1, -1, -1, -1)
             elif head_mask.dim() == 2:
                 head_mask = head_mask.unsqueeze(1).unsqueeze(-1).unsqueeze(-1)  # We can specify head_mask for each layer
             head_mask = head_mask.to(dtype=next(self.parameters()).dtype) # switch to fload if need + fp16 compatibility
-            head_mask = (1.0 - head_mask)
         else:
             head_mask = [None] * self.config.num_hidden_layers
 
-        embedding_output = self.embeddings(input_ids, token_type_ids)
-        encoded_layers = self.encoder(embedding_output,
-                                      extended_attention_mask,
-                                      output_all_encoded_layers=True,
-                                      head_mask=head_mask)
-
-        sequence_output = encoded_layers[-1]
+        embedding_output = self.embeddings(input_ids, position_ids=position_ids, token_type_ids=token_type_ids)
+        encoder_outputs = self.encoder(embedding_output,
+                                       extended_attention_mask,
+                                       head_mask=head_mask)
+        sequence_output = encoder_outputs[0]        
 
         pooled_output = self.attnpooler(sequence_output, attention_mask)
 

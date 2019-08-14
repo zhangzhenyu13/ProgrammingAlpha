@@ -286,7 +286,7 @@ if __name__ == '__main__':
     parser.add_argument('--answerLen', type=int, default=100)
     parser.add_argument('--contextLen', type=int, default=300)
     parser.add_argument('--questionLen', type=int, default=100)
-    parser.add_argument('--lose_rate', type=float, default=0.5)
+    parser.add_argument('--lose_rate', type=float, default=0.2)
     parser.add_argument('--relative_num', type=int, default=5)
 
     parser.add_argument('--extractor', type=str, default="lexrankS")

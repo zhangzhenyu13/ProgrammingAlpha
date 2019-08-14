@@ -1,8 +1,6 @@
-from .tokenizer import CoreNLPTokenizer,SpacyTokenizer
-from pytorch_pretrained_bert.tokenization import BertTokenizer
-from pytorch_pretrained_bert.tokenization_gpt2 import GPT2Tokenizer
-from pytorch_pretrained_bert.tokenization_openai import OpenAIGPTTokenizer
-from pytorch_pretrained_bert.tokenization_transfo_xl import TransfoXLTokenizer
+from .tokenizer import CoreNLPTokenizer,SpacyTokenizer, Seq2SeqAdapterTokenizer, RoBertaTokenizer
+import os
+import programmingalpha
 
 def ngrams(words, n=1, uncased=False, filter_fn=None, as_strings=True):
         """Returns a list of all ngrams from length 1 to n.
@@ -34,19 +32,40 @@ def ngrams(words, n=1, uncased=False, filter_fn=None, as_strings=True):
 
         return ngrams
 
+def get_tokenizer(model_path=None, name="bert"):
+    tokenizer=None
 
-def get_class(name):
-    if name == 'corenlp':
-        return CoreNLPTokenizer
-    if name == 'spacy':
-        return SpacyTokenizer
-    if name=='bert':
-        return BertTokenizer
-    if name=='gpt2':
-        return GPT2Tokenizer
-    if name=='openai':
-        return OpenAIGPTTokenizer
-    if name=='transformerXL':
-        return TransfoXLTokenizer
+    if name=="bert":
+        from pytorch_transformers import BertTokenizer
+        tokenizer=BertTokenizer.from_pretrained(model_path)
+        tokenizer=Seq2SeqAdapterTokenizer(tokenizer)
+    if name=="gpt2":
+        from pytorch_transformers import GPT2Tokenizer
+        tokenizer=GPT2Tokenizer.from_pretrained(model_path)
+        tokenizer=Seq2SeqAdapterTokenizer(tokenizer)
+    if name=="xlnet":
+        from pytorch_transformers import XLNetTokenizer
+        tokenizer= XLNetTokenizer.from_pretrained(model_path)
+        tokenizer=Seq2SeqAdapterTokenizer(tokenizer)
+    if name=="roberta":
+        tokenizer=RoBertaTokenizer(model_path)
 
-    raise RuntimeError('Invalid retriever class: %s' % name)
+    if tokenizer is  None:
+        raise RuntimeError("tokenizer:{} is not supported!".format(name))
+    
+    return tokenizer
+
+
+def tokenizeFolder(tokenizer, folder:str,
+                    folder_tok:str):
+    os.makedirs(folder_tok, exist_ok=True)
+    for file in os.listdir(folder):
+        raw_txt_file = folder + file  # os.path.join(folder, file)
+        tok_txt_file = folder_tok + file  # os.path.join(folder_tok, file)
+
+        with open(raw_txt_file, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+            add_sp = "target" in raw_txt_file
+            lines_tok = map(lambda line: tokenizer.tokenizeLine(line, add_sp=add_sp) + "\n", lines)
+            with open(tok_txt_file, "w", encoding="utf-8") as f:
+                f.writelines(lines_tok)
