@@ -153,7 +153,7 @@ class Seq2SeqAdapterTokenizer(Tokenizer):
 
         return  self.tokenizer.decode(token_ids, skip_special_tokens=skip_special_tokens, clean_up_tokenization_spaces=clean_up_tokenization_spaces)
     
-    def tokenizeLine(self, text, add_sp, **kwargs):
+    def tokenizeLine(self, text, add_sp=False, **kwargs):
         tokenized= self.encode(text)
 
         if add_sp:

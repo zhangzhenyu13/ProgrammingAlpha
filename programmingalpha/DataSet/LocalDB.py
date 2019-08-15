@@ -7,9 +7,10 @@ logger=getLogger(__name__)
 
 #db skema
 class DbSkema(object):
-    __data_db=os.path.join(DataPath,"LocalDB")
-    def __init__(self, name):
+    def __init__(self, name, data_root=DataPath):
         self.name=name
+        self.__data_db=os.path.join(data_root,"LocalDB")
+
         __path=os.path.join(self.__data_db,self.name)
         self.questions=os.path.join(__path,"Questions.json")
         self.answers=os.path.join(__path, "Answers.json")
@@ -37,10 +38,10 @@ __supported_dbs={
     }
 
 #global local-db path
-def getLocalDB(name):
+def getLocalDB(name, data_root=None):
         if name not in __supported_dbs:
             raise RuntimeError("{} is not found in local db:{}".format(name,__supported_dbs))
         
-        db=DbSkema(name)
+        db=DbSkema(name, data_root=data_root)
         return db
 

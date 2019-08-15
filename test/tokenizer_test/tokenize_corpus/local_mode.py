@@ -21,7 +21,7 @@ def init():
 def tokenize(text):
     text=text[0]
     #print("trying to tokenize=>",text)
-    tokenized_text=tokenizer.tokenizeLine(text)
+    tokenized_text=tokenizer.tokenizeLine(text, add_sp=False)
 
     return " ".join(tokenized_text)
 
@@ -52,6 +52,8 @@ if __name__ == '__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument("--tokenizer",type=str,default="bert", choices=["bert", "roberta", "gpt2","xlnet"])
     parser.add_argument("--file",type=str,default="")
+    parser.add_argument("--workers",type=int,default=30)
+    parser.add_argument("--batch_size",type=int,default=1000)
 
     args=parser.parse_args()
 
