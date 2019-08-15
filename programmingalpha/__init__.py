@@ -1,5 +1,5 @@
 import json
-
+import os
 #bert model
 BertRoot="/home/LAB/zhangzy/ShareModels/bert/"
 BertBaseCased="/home/LAB/zhangzy/ShareModels/bert/base-cased/"

@@ -6,7 +6,7 @@ from programmingalpha.models import expandEmbeddingByN
 
 class OnmtGPT2Encoder(EncoderBase):
     def __init__(self, model_path):
-        super(OnmtBertEncoder, self).__init__()
+        super(OnmtGPT2Encoder, self).__init__()
         config=GPT2Config.from_json_file(os.path.join( model_path, "config.json") )
         model=GPT2Model.from_pretrained(pretrained_model_name_or_path=os.path.join( model_path, "pytorch_model.bin"), config=config)
         model.wte=expandEmbeddingByN(model.wte, 4)
@@ -44,11 +44,11 @@ class OnmtGPT2Encoder(EncoderBase):
 def getWordEmbeddingFromGPT2Encoder(model:OnmtGPT2Encoder):
     return model.encoder.wte
 
-def buildBert(**kwargs):
+def buildGPT2(**kwargs):
     if "model_path" not in kwargs:
         import programmingalpha
         kwargs["model_path"] = programmingalpha.GPT2Base
 
-    encoder=OnmtBertEncoder(kwargs["model_path"])
+    encoder=OnmtGPT2Encoder(kwargs["model_path"])
 
     return encoder

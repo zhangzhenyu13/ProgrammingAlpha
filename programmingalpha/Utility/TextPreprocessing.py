@@ -395,7 +395,7 @@ class InformationAbstrator(TextInformationExtraction):
     def _computeSummary(self,summarizer,texts):
         sentences=TextBlob(" ".join(texts)).sentences
         n_count=max(len(texts), len(sentences))
-
+        
         passage=_documentFormatHelper(texts)
         parser=PlaintextParser.from_string(passage,self.__tokenizer)
         abstxt=summarizer(parser.document,n_count)

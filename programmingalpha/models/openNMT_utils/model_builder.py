@@ -19,7 +19,7 @@ from onmt.utils.misc import use_gpu
 from onmt.utils.logging import logger
 from onmt.utils.parse import ArgumentParser
 
-from programmingalpha.models.GenerationNets import supported_encoder_builders
+from programmingalpha.models.GenerationNets import supported_encoder_builders, supported_embedding_extractors
 
 
 def build_embeddings(opt, text_field, for_encoder=True):
@@ -65,6 +65,15 @@ def build_embeddings(opt, text_field, for_encoder=True):
     )
     return emb
 
+def initEmbedding(opt, emb:Embeddings, encoder):
+    pretrained_encoder = opt.pretrained_encoder
+    
+    if pretrained_encoder in supported_embedding_extractors.keys():
+        logger.info("initing embedding with extended encoder version:{}".format(pretrained_encoder))
+        word_embedding= supported_embedding_extractors[pretrained_encoder](encoder)
+        emb.word_lut=word_embedding
+    else:
+        logger.info("skipping init embedding and train from scratch")
 
 def build_encoder(opt, embeddings):
     """
@@ -166,6 +175,8 @@ def build_base_model(model_opt, fields, gpu, checkpoint=None, gpu_id=None):
     # Build decoder.
     tgt_field = fields["tgt"]
     tgt_emb = build_embeddings(model_opt, tgt_field, for_encoder=False)
+    #init tgt embedding
+    initEmbedding(opt, tgt_emb, encoder)
 
     # Share the embedding matrix - preprocess with share_vocab required.
     if model_opt.share_embeddings:
