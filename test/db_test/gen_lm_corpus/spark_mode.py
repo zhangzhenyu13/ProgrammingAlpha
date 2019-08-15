@@ -36,8 +36,11 @@ def _genCore(doc_json):
             word_count=len(w_doc)
         else:
             words.extend(w_doc)
+        if len(words)> 10:
+            res.append(" ".join(words))
 
-    doc_str="\n".join(words)
+    doc_str="\n".join(res)
+
     return doc_str.strip()
 
 
@@ -62,7 +65,7 @@ if __name__ == '__main__':
     from pyspark.sql import SparkSession
     spark = SparkSession\
         .builder\
-        .appName("gen plain text"+args.tokenizer)\
+        .appName("gen plain text")\
         .getOrCreate()
 
     input_file=docDB.answers if args.answers else docDB.questions
