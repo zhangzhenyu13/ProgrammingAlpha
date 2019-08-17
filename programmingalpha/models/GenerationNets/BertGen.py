@@ -10,6 +10,8 @@ class OnmtBertEncoder(EncoderBase):
         config=BertConfig.from_json_file(os.path.join( model_path, "config.json") )
         model=BertModel.from_pretrained(pretrained_model_name_or_path=os.path.join( model_path, "pytorch_model.bin"), config=config)
         model.embeddings.word_embeddings=expandEmbeddingByN(model.embeddings.word_embeddings, 4)
+        model.embeddings.word_embeddings=expandEmbeddingByN(model.embeddings.word_embeddings, 2, last=True)
+
         self.encoder=model
         print("init BERT model with {} weights".format(len(self.encoder.state_dict())))
         #print(model)

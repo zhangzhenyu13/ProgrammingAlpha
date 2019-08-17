@@ -143,7 +143,11 @@ class Seq2SeqAdapterTokenizer(Tokenizer):
         self.eos="<\s>"
         self.unk="<unk>"
         self.pad="<pad>"
-        
+        self.__NUM="[MATH]"
+        self.__CODE="[CODE]"
+        spt={"_math_token":self.__NUM, "_code_token":self.__CODE}
+        self.tokenizer.add_special_tokens(spt)
+
     def encode(self, text):
         ids=self.tokenizer.encode(text)
         ids=" ".join(map(lambda id: str(id),ids) )

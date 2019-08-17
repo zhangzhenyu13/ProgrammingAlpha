@@ -1,7 +1,10 @@
+#encoding=utf-8
 from programmingalpha.tokenizers import get_tokenizer
 import programmingalpha
 import argparse
 import os
+from programmingalpha.Utility import getLogger
+logger=getLogger(__name__)
 
 path_map_tokenizers={
     "bert":programmingalpha.BertBaseUnCased,
@@ -17,11 +20,11 @@ def init():
 
 
 def tokenize(text):
-    text=text[0]
-    #print("trying to tokenize=>",text)
+    #text=text[0]
+    #logger.info("trying to tokenize-->{}".format(text))
     tokenized_text=tokenizer.tokenizeLine(text)
 
-    return " ".join(tokenized_text)
+    return tokenized_text
 
 if __name__ == '__main__':
     parser=argparse.ArgumentParser()
@@ -34,7 +37,7 @@ if __name__ == '__main__':
         args.tokenizer="bert"
 
     inputfile=args.file
-    outputfile=inputfile+"-tokenized-"+args.tokenizer
+    outputfile=inputfile+".tokenized-"+args.tokenizer
 
     init()
     from pyspark.sql import SparkSession

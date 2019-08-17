@@ -4,12 +4,7 @@ sumeval
 textblob
 bert-serving-server
 bert-serving-client
-tensorflow
-#tensorflow-gpu
-pytorch
 scikit-learn
-pytorch_pretrained_bert
-texar
 flask_json
 flask_cors
 flask_compress

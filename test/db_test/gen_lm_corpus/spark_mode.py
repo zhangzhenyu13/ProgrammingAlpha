@@ -5,6 +5,7 @@ import logging
 import argparse
 from programmingalpha.Utility.TextPreprocessing import PreprocessPostContent
 import os
+os.environ["PYSPARK_PYTHON"]="/home/LAB/zhangzy/anaconda3/bin/python"
 
 logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt = '%m/%d/%Y %H:%M:%S',
@@ -36,8 +37,9 @@ def _genCore(doc_json):
             word_count=len(w_doc)
         else:
             words.extend(w_doc)
-        if len(words)> 10:
-            res.append(" ".join(words))
+            
+    if len(words)> 10:
+        res.append(" ".join(words))
 
     doc_str="\n".join(res)
 
@@ -72,5 +74,5 @@ if __name__ == '__main__':
     output_file=input_file.replace(".json", ".txt")
     
     doc_data=spark.read.json(input_file).rdd.map(_genCore)
-
+    doc_data.saveAsTextFile(output_file)
     

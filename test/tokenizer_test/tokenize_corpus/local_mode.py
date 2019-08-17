@@ -4,6 +4,8 @@ import argparse
 import os
 import multiprocessing
 import tqdm
+from programmingalpha.Utility import getLogger
+logger=getLogger(__name__)
 
 path_map_tokenizers={
     "bert":programmingalpha.BertBaseUnCased,
@@ -19,11 +21,9 @@ def init():
 
 
 def tokenize(text):
-    text=text[0]
-    #print("trying to tokenize=>",text)
     tokenized_text=tokenizer.tokenizeLine(text, add_sp=False)
 
-    return " ".join(tokenized_text)
+    return tokenized_text
 
 def tokenizeParallel(doc_data):
 
@@ -61,10 +61,20 @@ if __name__ == '__main__':
         args.tokenizer="bert"
 
     inputfile=args.file
-    outputfile=inputfile+"-tokenized-"+args.tokenizer
+    outputfile=inputfile.replace(".txt",".tokenized-"+args.tokenizer)
 
     with open(inputfile, "r", encoding="utf-8") as f:
-        doc_data=f.readlines()
+        docs=f.readlines()
+        doc_data=filter(lambda s: s and s.strip(), docs)
+        doc_data=list(doc_data)
+        logger.info("loaded {}/{} lines of text".format(len(doc_data), len(docs)))
     tokenizeParallel(doc_data)
 
+    '''s="You can use [NUM] and [CODE] to finish your work."
+    init()
+    print(tokenizer.tokenizer.vocab_size, len(tokenizer.tokenizer))
+    print(tokenizer.tokenizer.tokenize(s))
+    s_t=tokenize(s)
+    print(s)
+    print(s_t)'''
     

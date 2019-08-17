@@ -38,7 +38,7 @@ __supported_dbs={
     }
 
 #global local-db path
-def getLocalDB(name, data_root=None):
+def getLocalDB(name, data_root=DataPath):
         if name not in __supported_dbs:
             raise RuntimeError("{} is not found in local db:{}".format(name,__supported_dbs))
         

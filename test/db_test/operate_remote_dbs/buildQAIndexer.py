@@ -79,7 +79,7 @@ def updateDB(db:MongoStackExchange,data:dict,collectionName="QAIndexer"):
         print("progress:{}/{}".format(count,len(data)))
 
 if __name__ == '__main__':
-    db=initDB("stackoverflow")
+    db=initDB("ai")
     questionDict=traverseQuestions(db)
     traverseAnswers(db,questionDict)
     updateDB(db,questionDict)
