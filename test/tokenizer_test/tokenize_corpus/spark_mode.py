@@ -20,8 +20,7 @@ def init():
 
 
 def tokenize(text):
-    #text=text[0]
-    #logger.info("trying to tokenize-->{}".format(text))
+    text=text.value
     tokenized_text=tokenizer.tokenizeLine(text)
 
     return tokenized_text

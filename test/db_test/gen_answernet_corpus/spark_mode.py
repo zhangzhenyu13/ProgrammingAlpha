@@ -59,6 +59,8 @@ def _genCore(post):
     if q_len>20:
         q_txt+=" ".join(_getPreprocess(post["Body"],  q_len))
 
+    q_txt=" ".join(["[CLS]",q_txt ,"[SEP]"])
+    
     src_txts.append(q_txt)
     
     random.shuffle(answers)
@@ -70,7 +72,7 @@ def _genCore(post):
             ans_txt=" ".join(_getPreprocess(answer["Body"], args.answer_len))
             src_txts.append(ans_txt)
     
-    src_txt=" ".join(src_txts)
+    src_txt=" ".join(src_txts) +"[SEP]"
 
     record={"src":src_txt, "tgt":tgt_txt}
 
@@ -90,8 +92,8 @@ if __name__ == '__main__':
     parser.add_argument('--answer_len', type=int, default=80)
     parser.add_argument('--question_len', type=int, default=80)
 
-
     args = parser.parse_args()
+    init()
 
     from pyspark.sql import SparkSession
     spark = SparkSession\
@@ -102,5 +104,5 @@ if __name__ == '__main__':
     input_file=args.input_file
     output_file=input_file.replace(".json", "-seq2seq.json")
     
-    doc_data=spark.read.json(input_file).rdd.map(_genCore).filter(lambda s:s and s.strip())
+    doc_data=spark.read.json(input_file).rdd.filter(lambda post: post["AnswerCount"]>=args.relative_num).map(_genCore).filter(lambda s:s and s.strip())
     doc_data.saveAsTextFile(output_file)
