@@ -26,6 +26,7 @@ class OnmtBertEncoder(EncoderBase):
             lengths (LongTensor): length of each sequence ``(batch,)``
 
         """
+        #print("input->", src.size())
         inputids=src.squeeze(2).transpose(0,1).contiguous()
 
         outputs=self.encoder(input_ids=inputids)

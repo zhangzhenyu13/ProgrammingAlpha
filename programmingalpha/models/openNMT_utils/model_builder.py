@@ -138,6 +138,39 @@ def load_test_model(opt, model_path=None):
     model.generator.eval()
     return fields, model, model_opt
 
+def load_test_model_ensemble(opt):
+    from onmt.decoders.ensemble import EnsembleModel
+    """Read in multiple models for ensemble."""
+    shared_fields = None
+    shared_model_opt = None
+    models = []
+    for model_path in opt.models:
+        fields, model, model_opt = \
+            load_test_model(opt, model_path=model_path)
+        if shared_fields is None:
+            shared_fields = fields
+        else:
+            for key, field in fields.items():
+                try:
+                    f_iter = iter(field)
+                except TypeError:
+                    f_iter = [(key, field)]
+                for sn, sf in f_iter:
+                    if sf is not None and 'vocab' in sf.__dict__:
+                        sh_field = shared_fields[key]
+                        try:
+                            sh_f_iter = iter(sh_field)
+                        except TypeError:
+                            sh_f_iter = [(key, sh_field)]
+                        sh_f_dict = dict(sh_f_iter)
+                        assert sf.vocab.stoi == sh_f_dict[sn].vocab.stoi, \
+                            "Ensemble models must use the same " \
+                            "preprocessed data"
+        models.append(model)
+        if shared_model_opt is None:
+            shared_model_opt = model_opt
+    ensemble_model = EnsembleModel(models, opt.avg_raw_probs)
+    return shared_fields, ensemble_model, shared_model_opt
 
 def build_base_model(model_opt, fields, gpu, checkpoint=None, gpu_id=None):
     """Build a model from opts.
@@ -176,7 +209,7 @@ def build_base_model(model_opt, fields, gpu, checkpoint=None, gpu_id=None):
     tgt_field = fields["tgt"]
     tgt_emb = build_embeddings(model_opt, tgt_field, for_encoder=False)
     #init tgt embedding
-    initEmbedding(opt, tgt_emb, encoder)
+    initEmbedding(model_opt, tgt_emb, encoder)
 
     # Share the embedding matrix - preprocess with share_vocab required.
     if model_opt.share_embeddings:

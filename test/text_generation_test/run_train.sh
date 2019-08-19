@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
+encoder_lm=$1
+
 export CUDA_VISIBLE_DEVICES='0,1,2,3'
 python /home/LAB/zhangzy/ProgrammingAlpha/test/text_generation_test/train.py \
-                   -data /home/LAB/zhangzy/ProjectData/openNMT/answerNetData \
-                   -save_model /home/LAB/zhangzy/ProjectModels/answerNets/model \
-		           -model_dtype fp32 \
+                   -data /home/LAB/zhangzy/ProjectData/openNMT/lm_data/${encoder_lm}/data \
+                   -save_model /home/LAB/zhangzy/ProjectModels/seq2seq_lm/${encoder_lm}/model \
+		          -model_dtype fp32 \
                    -layers 4 \
                    -rnn_size 768 \
                    -word_vec_size 768 \
                    -transformer_ff 3072 \
                    -max_grad_norm 0 \
                    -optim adam \
-                   -pretrained_encoder bert \
+                   -pretrained_encoder  ${encoder_lm} \
                    -encoder_type transformer \
                    -decoder_type transformer \
                    -input_feed 0 \
@@ -28,12 +30,12 @@ python /home/LAB/zhangzy/ProgrammingAlpha/test/text_generation_test/train.py \
                    -normalization sents \
                    -max_generator_batches 2 \
                    -train_steps 200000 \
-                   -valid_steps 500 \
-                   -save_checkpoint_steps 1000 \
-                   -keep_checkpoint 100 \
+                   -valid_steps 10000 \
+                   -save_checkpoint_steps 10000 \
+                   -keep_checkpoint 5 \
                    -tensorboard \
                    -report_every 50 \
-                   -accum_count 8 \
+                   -accum_count 4 \
                    -copy_attn \
                    -param_init_glorot \
                    -world_size 1 \
