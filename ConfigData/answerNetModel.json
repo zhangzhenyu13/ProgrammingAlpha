@@ -1,9 +1,9 @@
 {
-    "models_root": "/home/LAB/zhangzy/ProjectModels/seq2seq_lm/",
+    "models_root": "/home/LAB/zhangzy/ProjectModels/answerNets/bertGen/",
     "models": [
         {
             "id": 0,
-            "model": "model_step_10000.pt",
+            "model": "model_step_20000.pt",
             "timeout": 600,
             "on_timeout": "to_cpu",
             "load": true,

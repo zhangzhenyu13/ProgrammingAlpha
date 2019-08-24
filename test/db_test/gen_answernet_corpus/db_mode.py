@@ -8,7 +8,6 @@ from programmingalpha.Utility import getLogger
 from programmingalpha.Utility.TextPreprocessing import InformationAbstrator
 logger = getLogger(__name__)
 
-
 def init():
 
     global textExtractor

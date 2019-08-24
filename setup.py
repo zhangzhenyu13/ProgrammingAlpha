@@ -17,5 +17,5 @@ setup(
     license=license,
     python_requires='>=3.6',
     packages=find_packages(exclude=('data')),
-    install_requires=reqs.strip().split('\n'),
+    #install_requires=reqs.strip().split('\n'),
 )
