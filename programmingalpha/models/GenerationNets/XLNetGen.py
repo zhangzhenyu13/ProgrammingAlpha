@@ -13,9 +13,10 @@ class OnmtXLNetEncoder(EncoderBase):
         '''
     def __init__(self, model_path):
         super(OnmtXLNetEncoder, self).__init__()
-        config=XLNetConfig.from_json_file(os.path.join( model_path, "xlnet-base-cased-config.json") )
-        model=XLNetModel.from_pretrained(pretrained_model_name_or_path= os.path.join( model_path, "xlnet-base-cased-pytorch_model.bin"), config=config)
+        config=XLNetConfig.from_json_file(os.path.join( model_path, "config.json") )
+        model=XLNetModel.from_pretrained(pretrained_model_name_or_path= os.path.join( model_path, "pytorch_model.bin"), config=config)
         model.word_embedding=expandEmbeddingByN(model.word_embedding, 4)
+        model.word_embedding=expandEmbeddingByN(model.word_embedding, 2, last=True)
         self.encoder=model
         print("init XLNet model with {} weights".format(len(self.encoder.state_dict())))
         #print(model)
