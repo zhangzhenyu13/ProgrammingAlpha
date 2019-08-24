@@ -192,10 +192,17 @@ class OnmtDictionary(Dictionary):
         #self.pad_index = self.add_symbol(pad)
         #self.bos_index = self.add_symbol(bos)
         #self.eos_index = self.add_symbol(eos)
+        self.math_word="[NUM]"
+        self.code_word="[CODE]"
+        self.math_index=self.add_symbol(self.math_word)
+        self.code_index=self.add_symbol(self.code_word)
+
         if extra_special_symbols:
             for s in extra_special_symbols:
                 self.add_symbol(s)
         self.nspecial = len(self.symbols)
+
+     
 
 class RoBertaTokenizer(Tokenizer):
     def add_args(self,parser:argparse.ArgumentParser):
@@ -250,7 +257,9 @@ class RoBertaTokenizer(Tokenizer):
 
         if add_sp:
             bpe_sentence=" ".join([self.bos,bpe_sentence, self.eos])
-
+        else:
+            bpe_sentence=" ".join(bpe_sentence)
+            
         return bpe_sentence
 
     
@@ -258,7 +267,7 @@ class RoBertaTokenizer(Tokenizer):
 if __name__ == '__main__':
     tokenizer1=CoreNLPTokenizer()
     tokenizer2=SpacyTokenizer()
-    
+
     s="I am a very powerful! (greatest) man"
     print(tokenizer1.tokenize(s))
     print(tokenizer2.tokenize(s))

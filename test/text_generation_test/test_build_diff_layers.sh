@@ -2,7 +2,7 @@
 export CUDA_VISIBLE_DEVICES='2'
 layer_num=2
 python ./build_copy_transformer.py \
-                   -data /home/LAB/zhangzy/ProjectData/openNMT/answerNetData \
+                   -data /home/LAB/zhangzy/ProjectData/openNMT/answer_data/bertGen/data \
                    -save_model /home/LAB/zhangzy/ProjectModels/bertSeq2Seqs/model-L$layer_num \
                    -layers $layer_num \
                    -rnn_size 768 \

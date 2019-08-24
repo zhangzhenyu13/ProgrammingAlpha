@@ -93,11 +93,11 @@ def main(opt, device_id, batch_queue=None, semaphore=None):
     _check_save_model_path(opt)
 
     # Build optimizer.
-    if checkpoint is not None:
-        optim = Optimizer.from_opt(model, opt, checkpoint=checkpoint)
-    else:
-        '''replace the original optimizer if necessary'''
-        optim= buildBertOptimizerW(model, model_opt)
+    #if checkpoint is not None:
+    #    optim = Optimizer.from_opt(model, opt, checkpoint=checkpoint)
+    #else:
+    '''replace the original optimizer if necessary'''
+    optim= buildBertOptimizerW(model, model_opt)
 
     # Build model saver
     model_saver = build_model_saver(model_opt, opt, model, fields, optim)

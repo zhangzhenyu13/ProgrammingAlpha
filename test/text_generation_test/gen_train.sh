@@ -3,9 +3,9 @@ encoder_lm=$1
 
 export CUDA_VISIBLE_DEVICES='0,1,2,3'
 python /home/LAB/zhangzy/ProgrammingAlpha/test/text_generation_test/train.py \
-                   -data /home/LAB/zhangzy/ProjectData/openNMT/lm_data/${encoder_lm}/data \
-                   -save_model /home/LAB/zhangzy/ProjectModels/seq2seq_lm/${encoder_lm}/model \
-		          -model_dtype fp32 \
+                   -data /home/LAB/zhangzy/ProjectData/openNMT/answer_data/${encoder_lm}Gen/data \
+                   -save_model /home/LAB/zhangzy/ProjectModels/answerNets/${encoder_lm}Gen/model \
+		   -model_dtype fp32 \
                    -layers 4 \
                    -rnn_size 768 \
                    -word_vec_size 768 \
@@ -25,7 +25,7 @@ python /home/LAB/zhangzy/ProgrammingAlpha/test/text_generation_test/train.py \
                    -label_smoothing 0.1 \
                    -adam_beta2 0.998 \
                    -batch_size 16 \
-                   -valid_batch_size 4 \
+                   -valid_batch_size 16 \
                    -batch_type sents \
                    -normalization sents \
                    -max_generator_batches 2 \
@@ -40,5 +40,7 @@ python /home/LAB/zhangzy/ProgrammingAlpha/test/text_generation_test/train.py \
                    -param_init_glorot \
                    -world_size 1 \
                    -gpu_ranks 0 \
+		   -train_from /home/LAB/zhangzy/ProjectModels/seq2seq_lm/${encoder_lm}/model_step_70000.pt
                    #-tensorboard_log_dir trainCopy.log \
                    #-train_from
+
