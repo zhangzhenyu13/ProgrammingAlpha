@@ -1,4 +1,5 @@
 from .tokenizer import CoreNLPTokenizer,SpacyTokenizer, Seq2SeqAdapterTokenizer, RoBertaTokenizer
+from .tokenizer import SimpleTokenizer, CoreNLPTokenizer, SpacyTokenizer
 import os
 import programmingalpha
 
@@ -50,6 +51,13 @@ def get_tokenizer(model_path=None, name="bert"):
     if name=="roberta":
         tokenizer=RoBertaTokenizer(model_path)
 
+    if name=="simple":
+        tokenizer=SimpleTokenizer()
+    if name=="spacy":
+        tokenizer=SpacyTokenizer()
+    if name== "corenlp":
+        tokenizer=CoreNLPTokenizer()
+        
     if tokenizer is  None:
         raise RuntimeError("tokenizer:{} is not supported!".format(name))
     

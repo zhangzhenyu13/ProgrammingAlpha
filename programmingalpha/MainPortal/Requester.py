@@ -1,10 +1,10 @@
 import requests
 import json
 from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
-import logging
+from  programmingalpha.Utility import getLogger
 from programmingalpha.Utility.processCorpus import E2EProcessor, PairProcessor
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+
+logger = getLogger(__name__)
 
 
 class RequesterPortal(object):
@@ -37,7 +37,7 @@ class RequesterServices(AlphaHTTPProxy):
         self.doc_searcher_portal=RequesterPortal(host=config.doc_searcher_service["host"], port=config.doc_searcher_service["port"])
         self.know_alpha_portal=RequesterPortal(host=config.know_alpha_service["host"], port=config.know_alpha_service["port"])
         self.answer_alpha_portal=RequesterPortal(host=config.answer_alpha_service["host"], port=config.answer_alpha_service["port"])
-
+        self.tokenizer_portal=RequesterPortal(host=config.tokenizer_service["host"], port=config.tokenizer_service["port"])
 
         self.e2e_processor=E2EProcessor(config.global_config)
 
@@ -54,6 +54,8 @@ class RequesterServices(AlphaHTTPProxy):
     def requestAnswerService(self, qc_data):
         return self.answer_alpha_portal.request(qc_data)
 
+    def requestTokenizerService(self, t_data):
+        return self.tokenizer_portal.request(t_data)
 
     def processCore(self, question):
         #data struct

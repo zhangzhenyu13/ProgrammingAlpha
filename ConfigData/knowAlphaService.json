@@ -2,13 +2,14 @@
   "port": 12302,
   "listen_ip": "0.0.0.0",
   "cors": "*",
-  "model_name": "KnowNet",
-  "model_dir": "/home/LAB/zhangzy/ProjectModels/knowNets/",
-  "num_label": 4,
-  "batch_size": 8,
-  "do_lower_case": true,
-  "no_cuda": true,
-  "local_rank": -1,
-  "fp16": false,
-  "max_seq_len": 1500
+  "question_len":80,
+  "answers":3,
+  "post_len":429,
+  "max_seq_len":512,
+  "cls_last":false,
+  "model": "bert",
+  "tokenizer":"bert",
+  "model_path":"/home/LAB/zhangzy/ShareModels/bert/base-uncased",
+  "dict_path":"",
+  "gpu_rank":-1
 }

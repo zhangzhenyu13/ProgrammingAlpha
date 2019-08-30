@@ -1,5 +1,5 @@
 from programmingalpha.DataSet.DBLoader import MongoStackExchange
-import programmingalpha
+from programmingalpha import AlphaConfig, AlphaPathLookUp
 import json
 import argparse
 import tqdm
@@ -84,7 +84,7 @@ def processData():
     }
 
     cache=[]
-    with open(programmingalpha.DataPath+"Corpus/seq2seq.json","w") as f:
+    with open(AlphaPathLookUp.DataPath+"Corpus/seq2seq.json","w") as f:
         for post in tqdm.tqdm(docDB.stackdb["posts"].find(query).batch_size(args.batch_size),desc="loading posts of "):
 
             record =_genCore(post)

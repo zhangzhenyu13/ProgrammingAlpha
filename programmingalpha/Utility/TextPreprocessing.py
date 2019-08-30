@@ -1,5 +1,4 @@
 import regex as re
-from pyentrp import entropy as ent
 import programmingalpha
 from textblob import TextBlob
 from bert_serving.client import BertClient
@@ -45,7 +44,7 @@ class PreprocessPostContent(object):
         self.min_words_sent=5
         self.min_words_paragraph=10
         self.max_number_pragraph=5
-        self.num_token="[NUM]"
+        self.num_token="[MATH]"
         self.code_token="[CODE]"
         self.max_code=5
 
@@ -263,7 +262,7 @@ class TextInformationExtraction(object):
     def __init__(self,maxClip,tokenizer=None):
         self.maxClip=maxClip
 
-        self.informationEnt=ent.shannon_entropy
+        #self.informationEnt=ent.shannon_entropy
         self.dela_min=0.1
 
         self.processor=PreprocessPostContent()
@@ -439,87 +438,4 @@ class InformationAbstrator(TextInformationExtraction):
 
     def reductionSummary(self,texts:list):
         return self._computeSummary(self.reducionS,texts)
-
-
-
-
-if __name__ == '__main__':
-
-    ans='''
-    
-    <p>Subclipse error -- Subversion Native Library not available</p>
-    
-    <p>I am getting the following message everytime the PHP project based on Subversion loads...</p>
-
-    <p><img src="https://i.stack.imgur.com/6NtP4.jpg" alt="Subversion Native Library not available."></p>
-    
-    <p>Obviously shown, the OS is a Mac OSX Mountain Lion.
-    I have also followed the instructions within the link, and it still appears at completely random times.
-    However, subversion actions seem to work fine.</p>
-    
-    <p>Your error is that the library has been loaded in another classloader.  I can only guess you have some other Subversion plugin installed (so that you have more than one) and the other one has already loaded the library so it cannot be loaded again.</p>
-
-<p>Aside from figuring that out and removing the other plugin, I would guess you can just install the SVNKit plugin and configure Subclipse to use it instead of JavaHL.  The SVNKit plugin is on the Subclipse update site.</p>
-
-'''
-
-    #s='''<p><code>(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])</code></p>'''
-    #ans+=s
-
-
-    gold='''
-        <p>An optimal solution for the task as stated , would be some alignment algorithm like Smith-Waterman , with a matrix which encodes typical typo frequencies .</p>
-        <p>As an exercise in NNs , I would recommend using a RNN . This circumvents the problem that your inputs will be of variable size , because you just feed one letter after another and get an output once you feed the delimiter .</p> 
-        <p>As trainingsdata you 'll need a list of random words and possibly a list of random strings , as negative examples and a list of slightly messed up versions of your target word as positive examples .</p>
-        <p>Here is a minimal character-level RNN , which consists of only a little more than a hundred lines of code , so you might be able to get your head around it or at least get it to run . Here is the excellent blog post by Karpathy to which the code sample belongs .</p>
-    '''
-
-
-    from pytorch_pretrained_bert.tokenization import BertTokenizer
-    never_split=("[UNK]", "[SEP]", "[PAD]", "[CLS]", "[MASK]","[NUM]","[CODE]")
-    tokenizer=BertTokenizer(vocab_file=programmingalpha.ModelPath+"knowledgeSearcher/vocab.txt",never_split=never_split)
-    print(PreprocessPostContent().getPlainTxt(ans))
-
-
-    #test score
-    def _testScore(summary,refs):
-        from programmingalpha.Utility.metrics import LanguageMetrics
-        lan_metric=LanguageMetrics()
-
-        rouge_1=lan_metric.rouge_1_score(summary,refs)
-        rouge_2=lan_metric.rouge_2_score(summary,refs)
-        rouge_l=lan_metric.rouge_l_score(summary,refs)
-        rouge_be=lan_metric.rouge_be_score(summary,refs)
-        bleu = lan_metric.rouge_be_score(summary,refs)
-
-        print("ROUGE-1: {}, ROUGE-2: {}, ROUGE-L: {}, ROUGE-BE: {}".format(
-            rouge_1, rouge_2, rouge_l, rouge_be
-        ).replace(", ", "\n"))
-
-        print("blue:{}".format(bleu))
-
-    txtExt=InformationAbstrator(50,tokenizer)
-    ref=" ".join(txtExt.tokenizer.tokenize(gold))
-
-    filter_funcs={
-        #"pagerank":txtExt.page_rank_texts,
-        "lexrankS":txtExt.lexrankSummary,
-        "klS":txtExt.klSummary,
-        "lsaS":txtExt.lsarankSummary,
-        "textrankS":txtExt.textrankSummary,
-        "reductionS":txtExt.reductionSummary
-    }
-
-    for k in filter_funcs:
-        filter_func=filter_funcs[k]
-
-        txtExt.initParagraphFilter(filter_func)
-        ans_clipped=txtExt.clipText(ans)
-        #ans_clipped=txtExt.page_rank_texts(texts)
-        [print("%s_p=>"%k,text) for text in ans_clipped]
-
-        _testScore(" ".join(ans_clipped),ref)
-        print("*"*50)
-
-
 

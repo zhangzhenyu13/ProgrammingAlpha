@@ -1,8 +1,7 @@
 import json
 import pexpect
-import logging
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+from programmingalpha.Utility import getLogger
+logger = getLogger(__name__)
 
 
 #general tokenizer interface
@@ -165,6 +164,11 @@ class Seq2SeqAdapterTokenizer(Tokenizer):
 
         return tokenized
 
+    def  tokenize(self, text, **kwargs):
+        return self.tokenizer.tokenize(text)
+    def convert_tokens_to_ids(self, tokens):
+        return self.tokenizer.convert_tokens_to_ids(tokens)
+    
 #adapter for pytorch/fairseq tokenizer method
 import argparse
 from fairseq.data import encoders
