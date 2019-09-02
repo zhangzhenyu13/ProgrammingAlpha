@@ -23,9 +23,9 @@ class KnowRetriever(object):
 
         ## model parameters
 
-        model=construct_inference_net(name=config.model)
+        model=construct_inference_net(name=config.name)
 
-        logger.info("loading weghts for {}".format(config.model))
+        logger.info("loading weghts for {}".format(config.name))
 
         # running parameters
         if config.gpu_rank==-1:
@@ -36,16 +36,18 @@ class KnowRetriever(object):
             map_location='cuda:{}'.format(config.gpu_rank)
         self.device=device
 
-        model_state_dict = torch.load(os.path.join(config.model_path, "model.bin"),map_location=map_location)
+        model_state_dict = torch.load(os.path.join(config.dict_path, "model_75000.bin"),map_location=map_location)
         model.load_state_dict(model_state_dict)
 
         model.to(device)
 
         self.model=model
 
+        self.batch_size=config.batch_size
+
         logger.info("ranker model init finished!!!")
 
-    def relationPredict(self,features,k=5):
+    def relationPredict(self,features):
         
         doc_ids=[id for id in range(len(features)) ]
 
@@ -69,14 +71,14 @@ class KnowRetriever(object):
         #print(results)
 
         
-        return results[:k]
+        return results
 
     def getRelationProbability(self,eval_dataloader:DataLoader):
         self.model.eval()
         device=self.device
         logits=[]
 
-        for input_ids, segment_ids in tqdm(eval_dataloader,desc="computing simValue"):
+        for input_ids, segment_ids in tqdm(eval_dataloader,desc="computing dist of <Q-post> pairs"):
             #logger.info("batch predicting")
             input_ids = input_ids.to(device)
             segment_ids = segment_ids.to(device)
@@ -106,10 +108,20 @@ class KnowAlphaHTTPProxy(AlphaHTTPProxy):
         AlphaHTTPProxy.__init__(self,config_file)
         args=self.args
         self.alphaModel=KnowRetriever(os.path.join(AlphaPathLookUp.ConfigPath, args.model_config_file))
-        self.feature_processor=FeatureProcessor(os.path.join(AlphaPathLookUp.ConfigPath, args.processor_config_file))
-    
+        self.feature_processor=FeatureProcessor(os.path.join(AlphaPathLookUp.ConfigPath, config_file))
+        self.top_K=args.top_K
     def processCore(self, data):
+        question, posts= data["question"], data["posts"]
         features=self.feature_processor.process(data["question"], data["posts"])
 
-        return self.alphaModel.relationPredict(features)
+        res= self.alphaModel.relationPredict(features)
+        
+        ranks=[]
+        for i in range(len(res)):
+            post=posts[res[i]["Id"]]
+            if "answers" not in post or not post["answers"]:
+                continue
+            ranks.append(res[i])
+
+        return res[:self.top_K]
 

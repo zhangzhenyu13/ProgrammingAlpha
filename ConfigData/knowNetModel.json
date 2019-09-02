@@ -1,13 +1,11 @@
 {
-    "gpu_rank":-1,
     "batch_size":8,
     "max_seq_len":512,
     "cased": false,
     "fp16":false,
-    "model_path":"",
     "name": "bert",
     "worker_num":10,
     "verbose":0,
-    "cls":"[CLS]",
-    "sep":"[SEP]"
+    "dict_path":"/home/LAB/zhangzy/ProjectModels/knowNets/bertEnc/",
+    "gpu_rank":-1
 }

@@ -3,7 +3,9 @@ from programmingalpha.answer_generations .translation_server import TranslationS
 import os
 
 from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
-import programmingalpha
+from programmingalpha import AlphaPathLookUp
+
+from.answer_alpha_input import E2EProcessor
 
 STATUS_OK = "ok"
 STATUS_ERROR = "error"
@@ -15,20 +17,23 @@ class AnswerAlphaHTTPProxy(AlphaHTTPProxy):
         AlphaHTTPProxy.__init__(self,config_file)
         args=self.args
         self.translation_server = TranslationServer()
-        self.translation_server.start( os.path.join(programmingalpha.ConfigPath, args.model_config) )
+        self.translation_server.start( os.path.join(AlphaPathLookUp.ConfigPath, args.model_config) )
+        self.e2e_processor=E2EProcessor(config_file)
+
 
     def processCore(self, data):
-        inputs = data
+        q_c_text = self.e2e_processor.processEnc(data["question"], data["posts"])
+        query_data = [{"id":0,"src":q_c_text}]
         out = {}
         try:
-            translation, scores, n_best, times = self.translation_server.run(inputs)
-            assert len(translation) == len(inputs)
-            assert len(scores) == len(inputs)
-
-            out = [[{"src": inputs[i]['src'], "tgt": translation[i],
+            translation, scores, n_best, times = self.translation_server.run(query_data)
+            assert len(translation) == len(query_data)
+            assert len(scores) == len(query_data)
+            
+            out = {"src": q_c_text, "tgt": translation[0], "tgt_txt": self.e2e_processor.processDec(translation[0]),
                      "n_best": n_best,
-                     "pred_score": scores[i]}
-                    for i in range(len(translation))]]
+                     "pred_score": scores[0]}
+            
         except ServerModelError as e:
             out['error'] = str(e)
             out['status'] = STATUS_ERROR

@@ -1,5 +1,5 @@
 from multiprocessing import Process, Event
-import programmingalpha
+from programmingalpha import AlphaConfig, AlphaPathLookUp
 import os
 import json
 import logging
@@ -10,7 +10,7 @@ logger.setLevel(logging.INFO)
 class AlphaHTTPProxy(Process):
     def __init__(self,config_file):
         super().__init__()
-        self.args = programmingalpha.loadConfig( os.path.join( programmingalpha.ConfigPath, config_file ) )
+        self.args = AlphaConfig.loadConfig( os.path.join( AlphaPathLookUp.ConfigPath, config_file ) )
         self.is_ready = Event()
 
 
@@ -35,7 +35,7 @@ class AlphaHTTPProxy(Process):
             data = request.form if request.form else request.json
             if type(data)==str:
                 data=json.loads(data)
-            print("query data--->", data)
+            print("query data--->", json.dumps(data)[:50],"... ...")
 
             try:
                 logger.info('new request from %s' % request.remote_addr)

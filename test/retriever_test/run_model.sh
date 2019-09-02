@@ -1,23 +1,14 @@
 #!/usr/bin/env bash
-#export CUDA_VISIBLE_DEVICES='0'
 python build_linkprediction_model.py \
-    --model_name LinkNet \
-    --data_dir /home/LAB/zhangzy/ProjectData/knowNet/ \
-    --bert_model /home/LAB/zhangzy/ShareModels/uncased_L-12_H-768_A-12/ \
-    --output_dir /home/LAB/zhangzy/ProjectModels/linkNets/ \
-    --vocab_file /home/LAB/zhangzy/ProjectModels/linkNets/vocab.txt \
-    --local_rank -1 \
-    --do_eval \
-    --tokenized \
-    --train_batch_size 64 \
-    --eval_batch_size 128 \
+    --encoder bert \
+    --data_dir ~/ProjectData/knowNet/ \
+    --save_dir ~/ProjectModels/knowNets/bertEnc/ \
     --gradient_accumulation_steps 8 \
-    --num_train_epochs 20 \
+    --train_batch_size 16 \
     --eval_step_size 5000 \
-    --do_lower_case \
-    --max_seq_length 1500 \
-    --overwrite \
-    --do_train \
-    --task_name q_and_p \
-    #/home/LAB/zhangzy/ProjectModels/knowledgeSearcher/model1 \
-    #/home/LAB/zhangzy/ShareModels/uncased_L-12_H-768_A-12 \
+    --eval_batch_size 16  \
+    --max_steps 100000 \
+    --warmup_steps 8000 \
+    --train_verbose 200 \
+    --train_load_size 1000000 \
+    --eval_load_size 10000

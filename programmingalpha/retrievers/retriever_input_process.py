@@ -1,5 +1,10 @@
 import json
 import os
+import torch
+import random
+import tqdm
+from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler,
+                              TensorDataset)
 from programmingalpha.Utility.processCorpus import CorpusProcessor
 from programmingalpha import AlphaPathLookUp
 from programmingalpha.Utility import getLogger
@@ -77,7 +82,7 @@ class FeatureProcessor(CorpusProcessor):
 
         body=self._getPreprocess(post["Body"],self.question_len)
 
-        ans_iter= map(lambda ans: ans["Body"], post["answers"])
+        ans_iter= map(lambda ans: ans["Body"], self._getBestAnswers(post))
         answers=[]
         for _ in range(self.answers):
             try:
@@ -135,7 +140,7 @@ class FeatureProcessor(CorpusProcessor):
             question_words.insert(0, self.CLS_Token)
         q_ids, q_segs=self._convert_ids(question_words, 0)
 
-        for post in posts:
+        for post in tqdm.tqdm(posts, desc="processing posts data"):
             post_words=self._process_post(post)
             if self.cls_last:
                 post_words.append(self.CLS_Token )
@@ -173,3 +178,43 @@ def load_features_from_file(file_path):
 
     return features
 
+class FeatureLoader(object):
+    def __init__(self, data_folder, batch_size=16):
+        super(FeatureLoader, self).__init__()
+        self.data_folder=data_folder
+        self.files=list(os.listdir(data_folder))
+        self.file_iter=iter(self.files)
+        self.batch_size=batch_size
+        self.mode="train" #
+
+    def reset(self):
+        random.shuffle(self.files)
+        self.file_iter=iter(self.files)
+    def get_next_file(self):
+        try:
+            file=next(self.file_iter)
+        except:
+            self.reset()
+            return self.get_next_file()
+        return file
+    
+    def load_data(self, data_size=1e+5):
+        logger.info("loading data size:{}".format(data_size))
+        features=[]
+        while len(features)<data_size:
+            file=self.get_next_file()
+            tmp_features=load_features_from_file(os.path.join(self.data_folder, file))
+            features.extend(tmp_features)
+        
+        all_input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long)
+        all_segment_ids = torch.tensor([f.segment_ids for f in features], dtype=torch.long)
+        all_label_ids = torch.tensor([f.label_id for f in features], dtype=torch.long)
+        data = TensorDataset(all_input_ids, all_segment_ids, all_label_ids)
+        if self.mode=="train":
+            sampler = RandomSampler(data)
+        else:
+            sampler=SequentialSampler(data)
+
+        dataloader = DataLoader(data, sampler=sampler, batch_size=self.batch_size)
+
+        return dataloader

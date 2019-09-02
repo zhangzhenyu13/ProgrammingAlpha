@@ -8,7 +8,11 @@ class OnmtBertEncoder(EncoderBase):
     def __init__(self, model_path):
         super(OnmtBertEncoder, self).__init__()
         config=BertConfig.from_json_file(os.path.join( model_path, "config.json") )
-        model=BertModel.from_pretrained(pretrained_model_name_or_path=os.path.join( model_path, "pytorch_model.bin"), config=config)
+        pretrained_dict=os.path.join( model_path, "pytorch_model.bin")
+        if os.path.exists(pretrained_dict):
+            model=BertModel.from_pretrained(pretrained_model_name_or_path=pretrained_dict, config=config)
+        else:
+            model=BertModel(config)
         model.embeddings.word_embeddings=expandEmbeddingByN(model.embeddings.word_embeddings, 4)
         model.embeddings.word_embeddings=expandEmbeddingByN(model.embeddings.word_embeddings, 2, last=True)
 
@@ -48,8 +52,8 @@ def getWordEmbeddingFromBert(model:OnmtBertEncoder):
 
 def buildBert(**kwargs):
     if "model_path" not in kwargs:
-        import programmingalpha
-        kwargs["model_path"] = programmingalpha.BertBaseUnCased
+        from programmingalpha import AlphaPathLookUp
+        kwargs["model_path"] = AlphaPathLookUp.BertBaseUnCased
 
     encoder=OnmtBertEncoder(kwargs["model_path"])
 

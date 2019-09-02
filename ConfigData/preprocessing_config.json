@@ -1,0 +1,10 @@
+{
+    "max_quote_rate":1.5,
+    "max_quote_diff":5,
+    "min_words_sent":5,
+    "min_words_paragraph":10,
+    "max_number_pragraph":5,
+    "num_token":"[MATH]",
+    "code_token":"[CODE]",
+    "max_code":5
+}

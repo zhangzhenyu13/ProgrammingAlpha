@@ -2,14 +2,14 @@
   "port": 12302,
   "listen_ip": "0.0.0.0",
   "cors": "*",
+  "top_K":5,
   "question_len":80,
   "answers":3,
   "post_len":429,
   "max_seq_len":512,
   "cls_last":false,
-  "model": "bert",
   "tokenizer":"bert",
+  "model": "bert",
   "model_path":"/home/LAB/zhangzy/ShareModels/bert/base-uncased",
-  "dict_path":"",
-  "gpu_rank":-1
+  "model_config_file": "knowNetModel.json"
 }

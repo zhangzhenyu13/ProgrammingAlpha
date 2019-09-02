@@ -28,50 +28,17 @@ class CorpusProcessor(object):
         return " ".join(txt_processed)
 
 
-class E2EProcessor(CorpusProcessor):
+    def _getBestAnswers(self,post):
+        if "answers" not in post:
+            return []
 
-    def __init__(self, config_file):
-        CorpusProcessor.__init__(self, config_file)
+        answers=post["answers"]
+        if len(answers) ==0:
+            return [] 
 
+        if "AcceptedAnswerId" in post:
+            ans= answers[-1]
+            del answers[-1]
+            answers.insert(0, ans)
 
-        config_answer_alpha = self.config.answer_alpha
-
-        self.question_len = config_answer_alpha["question_len"]
-        self.context_len = config_answer_alpha["context_len"]
-
-
-    def process(self, question:json, relatives:list):
-
-        textExtractor=self.textExtractor
-        title=" ".join( textExtractor.tokenizer.tokenize(question["Title"]) )
-        body=question["Body"]
-
-        question,_=self._getPreprocess(body, self.question_len)
-
-        question=title+" "+question
-
-        context=[]
-        for post in relatives:
-
-            if "answers" not in post:
-                continue
-
-            answers=post["answers"]
-            if len(answers) ==0:
-                continue
-
-            ans_txt=answers[0]["Body"]
-            context.append(ans_txt)
-
-
-        context=" ".join(context)
-
-        context,_=self._getPreprocess(context, self.context_len)
-
-
-        record={"question":question,"context":context}
-
-        return record
-
-
-
+        return answers

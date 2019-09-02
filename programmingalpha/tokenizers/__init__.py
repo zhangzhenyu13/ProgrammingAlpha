@@ -1,5 +1,5 @@
-from .tokenizer import CoreNLPTokenizer,SpacyTokenizer, Seq2SeqAdapterTokenizer, RoBertaTokenizer
-from .tokenizer import SimpleTokenizer, CoreNLPTokenizer, SpacyTokenizer
+from .tokenizer import Seq2SeqAdapterTokenizer, RoBertaTokenizer
+from .extra_tokenizers import SimpleTokenizer, CoreNLPTokenizer, SpacyTokenizer
 import os
 import programmingalpha
 
@@ -32,6 +32,8 @@ def ngrams(words, n=1, uncased=False, filter_fn=None, as_strings=True):
             ngrams = ['{}'.format(' '.join(words[s:e])) for (s, e) in ngrams]
 
         return ngrams
+
+
 
 def get_tokenizer(model_path=None, name="bert"):
     tokenizer=None

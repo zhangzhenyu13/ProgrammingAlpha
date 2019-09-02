@@ -1,8 +1,5 @@
 import regex as re
-import programmingalpha
 from textblob import TextBlob
-from bert_serving.client import BertClient
-import networkx as nx
 import numpy as np
 from sumy.summarizers.lex_rank import LexRankSummarizer
 from sumy.summarizers.kl import KLSummarizer
@@ -13,7 +10,8 @@ from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.stemmers import Stemmer
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.utils import get_stop_words
-from programmingalpha.tokenizers.tokenizer import SimpleTokenizer
+from programmingalpha.tokenizers.extra_tokenizers import SimpleTokenizer
+from programmingalpha import AlphaConfig, AlphaPathLookUp
 
 class PreprocessPostContent(object):
     code_snippet=re.compile(r"<pre><code>.*?</code></pre>")
@@ -38,15 +36,17 @@ class PreprocessPostContent(object):
 
         return s
 
-    def __init__(self):
-        self.max_quote_rate=1.5
-        self.max_quote_diff=5
-        self.min_words_sent=5
-        self.min_words_paragraph=10
-        self.max_number_pragraph=5
-        self.num_token="[MATH]"
-        self.code_token="[CODE]"
-        self.max_code=5
+    def __init__(self, config_file="preprocessing_config.json"):
+        import os
+        config=AlphaConfig.loadConfig(os.path.join(AlphaPathLookUp.ConfigPath, config_file))
+        self.max_quote_rate=config.max_quote_rate
+        self.max_quote_diff=config.max_quote_diff
+        self.min_words_sent=config.min_words_sent
+        self.min_words_paragraph=config.min_words_paragraph
+        self.max_number_pragraph=config.max_number_pragraph
+        self.num_token=config.num_token
+        self.code_token=config.code_token
+        self.max_code=config.max_code
 
     def remove_bracket(self,txt):
         cleaned=[]
@@ -279,6 +279,10 @@ class TextInformationExtraction(object):
 
     def page_rank_texts(self,texts:list):
         #each txt in texts is tokenized
+        from bert_serving.client import BertClient
+        import networkx as nx
+        #begin re-ranking
+
         if self.is_tokenized:
             for i in range(len(texts)):
                 texts[i]=self.tokenizer.tokenize(texts[i])

@@ -2,7 +2,6 @@ import requests
 import json
 from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
 from  programmingalpha.Utility import getLogger
-from programmingalpha.Utility.processCorpus import E2EProcessor, PairProcessor
 
 logger = getLogger(__name__)
 
@@ -37,11 +36,8 @@ class RequesterServices(AlphaHTTPProxy):
         self.doc_searcher_portal=RequesterPortal(host=config.doc_searcher_service["host"], port=config.doc_searcher_service["port"])
         self.know_alpha_portal=RequesterPortal(host=config.know_alpha_service["host"], port=config.know_alpha_service["port"])
         self.answer_alpha_portal=RequesterPortal(host=config.answer_alpha_service["host"], port=config.answer_alpha_service["port"])
-        self.tokenizer_portal=RequesterPortal(host=config.tokenizer_service["host"], port=config.tokenizer_service["port"])
+        #self.tokenizer_portal=RequesterPortal(host=config.tokenizer_service["host"], port=config.tokenizer_service["port"])
 
-        self.e2e_processor=E2EProcessor(config.global_config)
-
-        self.pair_processor=PairProcessor(config.global_config)
 
         logger.info("main portal: requester services loaded")
 
@@ -71,45 +67,33 @@ class RequesterServices(AlphaHTTPProxy):
             question["Tags"]=[]
             logger.info("no tags is available")
 
+        if "size" not in question:
+            question["size"]=100
+            logger.info("no size infor is available")
 
         #query doc searcher
-        docs_list=self.requestDocService(question)
-        print("docs_list-->",docs_list[0].keys(),docs_list)
+        posts_list=self.requestDocService(question)
+        logger.info("retrieved {} posts, with keywords as-->{}".format(len(posts_list),posts_list[0].keys()) )
 
-        #re-strcut question
-        #question["Title"]=question["title"]
-        #question["Body"]=question["body"]
-        #question["Tags"]=question["tag_list"]
-
-        id=0
-        for doc in docs_list:
-            doc["Id"]=id
-            id+=1
 
         #query doc ranker
-        rank_query=self.pair_processor.process(question, docs_list)
-
+        rank_query={"question":question, "posts":posts_list}
         ranks_data=self.requestKnowService(rank_query)
 
-        docs={doc["Id"]:doc for doc in docs_list}
+        logger.info("found {} useful posts".format(len(ranks_data)))
 
         useful_posts=[]
         for rank in ranks_data:
-            post=docs[rank["Id"]]
+            post=posts_list[rank["Id"]]
             useful_posts.append(post)
 
+        
         #query answer alpha
-        res=self.e2e_processor.process(question, useful_posts)
-        question=res["question"]
-        context=res["context"]
 
-        qc_data=[
-            {
-                "id":0,
-                "src": " ".join( [question, "[SEP]", context] )
-            }
-            ]
+        answer_query_data={"question":question,"posts":useful_posts}
 
-        answer=self.requestAnswerService(qc_data)
+        answer=self.requestAnswerService(answer_query_data)
 
-        return answer, useful_posts
+        logger.info("finished generating answer")
+
+        return {"generated-answers":answer, "useful-reading-posts":useful_posts}

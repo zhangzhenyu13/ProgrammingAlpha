@@ -1,4 +1,4 @@
-from programmingalpha.DocSearchEngine.doc_searcher import DocSearcherHTTPProxy
+from programmingalpha.DocSearchEngine2.doc_searcher import DocSearcherHTTPProxy
 
 
 if __name__ == '__main__':
