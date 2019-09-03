@@ -17,8 +17,7 @@ class OnmtRobertaEncoder(EncoderBase):
 
     def __init__(self, model_path, padding_idx, vocab_size):
         super(OnmtRobertaEncoder, self).__init__()
-        ckpt = torch.load(os.path.join(model_path, "model.pt"), map_location='cpu')
-        args = ckpt["args"]
+        
 
         self.roberta_encoder = TransformerSentenceEncoder(
             padding_idx=padding_idx,
@@ -38,79 +37,25 @@ class OnmtRobertaEncoder(EncoderBase):
         )
         print(self.roberta_encoder)
         print("defined the roberta network!")
-        model_dict = {}
-        for k, v in ckpt["model"].items():
-            if "decoder.sentence_encoder." in k:
-                k = k.replace("decoder.sentence_encoder.", "")
-                if k not in self.roberta_encoder.state_dict().keys():
-                    print("skip", k)
-                    continue
-                model_dict[k] = v
-                print("{}:{}".format(k, v.size()))
+        model_ckpt_file=os.path.join(model_path, "model.pt")
+        if os.path.exists(model_ckpt_file):
+            ckpt = torch.load(model_ckpt_file, map_location='cpu')
+            args = ckpt["args"]
+            model_dict = {}
+            for k, v in ckpt["model"].items():
+                if "decoder.sentence_encoder." in k:
+                    k = k.replace("decoder.sentence_encoder.", "")
+                    if k not in self.roberta_encoder.state_dict().keys():
+                        print("skip", k)
+                        continue
+                    model_dict[k] = v
+                    print("{}:{}".format(k, v.size()))
 
-        self.roberta_encoder.load_state_dict(model_dict)
-        print("loaded {}/{} weights".format(len(model_dict.keys()), len(self.roberta_encoder.state_dict().keys())))
+            self.roberta_encoder.load_state_dict(model_dict)
+            print("loaded {}/{} weights".format(len(model_dict.keys()), len(self.roberta_encoder.state_dict().keys())))
 
         self.roberta_encoder.embed_tokens=expandEmbeddingByN(self.roberta_encoder.embed_tokens, 4 )
         print("*"*50)
-
-    @staticmethod
-    def forwad1(
-        self:TransformerSentenceEncoder,
-        tokens: torch.Tensor,
-        segment_labels: torch.Tensor = None,
-        last_state_only: bool = False,
-        positions: Optional[torch.Tensor] = None,
-    ):
-
-        # compute padding mask. This is needed for multi-head attention
-        padding_mask = tokens.eq(self.padding_idx)
-        if not padding_mask.any():
-            padding_mask = None
-
-        x = self.embed_tokens(tokens)
-
-        if self.embed_scale is not None:
-            x *= self.embed_scale
-
-        if self.embed_positions is not None:
-            x += self.embed_positions(tokens, positions=positions)
-
-        if self.segment_embeddings is not None and segment_labels is not None:
-            x += self.segment_embeddings(segment_labels)
-
-        if self.emb_layer_norm is not None:
-            x = self.emb_layer_norm(x)
-
-        x = F.dropout(x, p=self.dropout, training=self.training)
-
-        # account for padding while computing the representation
-        if padding_mask is not None:
-            x *= 1 - padding_mask.unsqueeze(-1).type_as(x)
-
-        embedding=x
-
-        # B x T x C -> T x B x C
-        x = x.transpose(0, 1)
-
-        inner_states = []
-        if not last_state_only:
-            inner_states.append(x)
-
-        for layer in self.layers:
-            x, _ = layer(x, self_attn_padding_mask=padding_mask)
-            if not last_state_only:
-                inner_states.append(x)
-
-        # T x B x C -> B x T x C
-        x = x.transpose(0, 1)
-
-        sentence_rep = x[:, 0, :]
-
-        if last_state_only:
-            inner_states = [x]
-
-        return embedding,inner_states, sentence_rep
 
 
     def forward(self, src, lengths=None):

@@ -3,9 +3,9 @@ from programmingalpha.tokenizers import  get_tokenizer
 from programmingalpha import AlphaPathLookUp
 
 def testBasicFunctions():
-    #tokenizer=get_tokenizer(name="gpt2", model_path=AlphaPathLookUp.GPT2Base)
+    tokenizer=get_tokenizer(name="gpt2", model_path=AlphaPathLookUp.GPT2Base)
     #tokenizer=get_tokenizer(name="roberta", model_path=programmingalpha.RoBertaBase)
-    tokenizer=get_tokenizer(name="bert", model_path=AlphaPathLookUp.BertBaseUnCased)
+    #tokenizer=get_tokenizer(name="bert", model_path=AlphaPathLookUp.BertBaseUnCased)
     
     print(tokenizer.tokenizer.additional_special_tokens)
     print(tokenizer.tokenizer.added_tokens_encoder)

@@ -1,5 +1,5 @@
 {
-    "models_root": "/home/LAB/zhangzy/ProjectModels/answerNets/bertGen/",
+    "models_root": "/home/LAB/zhangzy/ProjectModels/answerNets/xlnetGen/",
     "models": [
         {
             "id": 0,

@@ -8,11 +8,16 @@ class OnmtGPT2Encoder(EncoderBase):
     def __init__(self, model_path):
         super(OnmtGPT2Encoder, self).__init__()
         config=GPT2Config.from_json_file(os.path.join( model_path, "config.json") )
-        model=GPT2Model.from_pretrained(pretrained_model_name_or_path=os.path.join( model_path, "pytorch_model.bin"), config=config)
+        pretrained_dict=os.path.join( model_path, "pytorch_model.bin")
+        if os.path.exists(pretrained_dict):
+            model=GPT2Model.from_pretrained(pretrained_model_name_or_path=pretrained_dict, config=config)
+            print("init GPT2 model with {} weights".format(len(model.state_dict())))
+        else:
+            model=GPT2Model(config)
+
         model.wte=expandEmbeddingByN(model.wte, 4)
         self.encoder=model
 
-        print("init BERT model with {} weights".format(len(self.encoder.state_dict())))
         #print(model)
         print("***"*20)
 

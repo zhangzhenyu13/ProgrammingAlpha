@@ -5,9 +5,9 @@
  "model_config": "answerNetModel.json",
  "question_len":60,
  "context_len":450,
- "tokenizer":"bert",
-  "model": "bert",
-  "model_path":"/home/LAB/zhangzy/ShareModels/bert/base-uncased"
+ "tokenizer":"xlnet",
+  "model": "xlnet",
+  "model_path":"/home/LAB/zhangzy/ShareModels/xlnet/base-cased"
 }
 
 

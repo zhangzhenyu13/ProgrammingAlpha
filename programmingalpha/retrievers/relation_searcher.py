@@ -28,15 +28,25 @@ class KnowRetriever(object):
         logger.info("loading weghts for {}".format(config.name))
 
         # running parameters
-        if config.gpu_rank==-1:
+        if torch.cuda.is_available()==False or config.use_gpu==False:
+            n_gpu=0
             device=torch.device("cpu")
             map_location='cpu'
         else:
-            device=torch.device("cuad", config.gpu_rank)
-            map_location='cuda:{}'.format(config.gpu_rank)
+            n_gpu=torch.cuda.device_count()
+            if n_gpu<2:
+                device=torch.device("cuda:0") 
+                map_location='cuda:{}'.format(config.gpu_rank)
+            else:
+                device= torch.device("cuda")
+                map_location='cuda'
+                torch.cuda.manual_seed_all(43)
+        
+        torch.manual_seed(43)
         self.device=device
+        logger.info("{}, {} gpus".format(self.device, n_gpu))
 
-        model_state_dict = torch.load(os.path.join(config.dict_path, "model_75000.bin"),map_location=map_location)
+        model_state_dict = torch.load(config.dict_path,map_location=map_location)
         model.load_state_dict(model_state_dict)
 
         model.to(device)
@@ -55,8 +65,8 @@ class KnowRetriever(object):
         segment_ids = torch.tensor([f.segment_ids for f in features], dtype=torch.long)
 
         eval_data = TensorDataset(input_ids, segment_ids)
-
-        eval_dataloader = DataLoader(eval_data, shuffle=False,batch_size=self.batch_size)
+        sampler=SequentialSampler(eval_data)
+        eval_dataloader = DataLoader(eval_data, sampler=sampler,batch_size=self.batch_size)
 
         logits=self.getRelationProbability(eval_dataloader)
         #print("logits is {}".format(logits))
@@ -77,7 +87,7 @@ class KnowRetriever(object):
         self.model.eval()
         device=self.device
         logits=[]
-
+        #print("to device", device)
         for input_ids, segment_ids in tqdm(eval_dataloader,desc="computing dist of <Q-post> pairs"):
             #logger.info("batch predicting")
             input_ids = input_ids.to(device)
@@ -112,7 +122,7 @@ class KnowAlphaHTTPProxy(AlphaHTTPProxy):
         self.top_K=args.top_K
     def processCore(self, data):
         question, posts= data["question"], data["posts"]
-        features=self.feature_processor.process(data["question"], data["posts"])
+        features=self.feature_processor.process(question, posts)
 
         res= self.alphaModel.relationPredict(features)
         
@@ -122,6 +132,9 @@ class KnowAlphaHTTPProxy(AlphaHTTPProxy):
             if "answers" not in post or not post["answers"]:
                 continue
             ranks.append(res[i])
+            
+            if len(ranks)>=self.top_K:
+                break
 
-        return res[:self.top_K]
+        return ranks[:self.top_K]
 

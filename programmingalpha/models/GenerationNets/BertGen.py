@@ -11,13 +11,13 @@ class OnmtBertEncoder(EncoderBase):
         pretrained_dict=os.path.join( model_path, "pytorch_model.bin")
         if os.path.exists(pretrained_dict):
             model=BertModel.from_pretrained(pretrained_model_name_or_path=pretrained_dict, config=config)
+            print("init BERT model with {} weights".format(len(model.state_dict())))
         else:
             model=BertModel(config)
         model.embeddings.word_embeddings=expandEmbeddingByN(model.embeddings.word_embeddings, 4)
         model.embeddings.word_embeddings=expandEmbeddingByN(model.embeddings.word_embeddings, 2, last=True)
 
         self.encoder=model
-        print("init BERT model with {} weights".format(len(self.encoder.state_dict())))
         #print(model)
         print("***"*20)
 
