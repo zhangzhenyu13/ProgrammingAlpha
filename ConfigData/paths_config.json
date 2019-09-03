@@ -1,0 +1,21 @@
+{
+    "BertRoot":"/home/LAB/zhangzy/ShareModels/bert/",
+    "BertBaseCased":"/home/LAB/zhangzy/ShareModels/bert/base-cased/",
+    "BertBaseUnCased":"/home/LAB/zhangzy/ShareModels/bert/base-uncased/",
+    "BertLargeCased":"/home/LAB/zhangzy/ShareModels/bert/large-cased/",
+    "BertLargeUnCased":"/home/LAB/zhangzy/ShareModels/bert/large-uncased/",
+    "BertLargeCasedMasking":"/home/LAB/zhangzy/ShareModels/bert/large-cased-whole-masking/",
+    "BertLargeUnCasedMasking":"/home/LAB/zhangzy/ShareModels/bert/large-uncased-whole-masking/",
+    "GPT2Base":"/home/LAB/zhangzy/ShareModels/gpt-2/base/",
+    "GPT2Medium":"/home/LAB/zhangzy/ShareModels/gpt-2/medium/",
+    "XLNetBaseCased":"/home/LAB/zhangzy/ShareModels/xlnet/base-cased",
+    "XLNetLargeCased":"/home/LAB/zhangzy/ShareModels/xlnet/large-cased",
+    "RoBertaBase":"/home/LAB/zhangzy/ShareModels/roberta/base/",
+    "RoBertaLarge":"/home/LAB/zhangzy/ShareModels/roberta/large/",
+
+    "ConfigPath":"/home/LAB/zhangzy/ProgrammingAlpha/ConfigData/",
+    "DataCases":"/home/LAB/zhangzy/ProgrammingAlpha/dataCases/",
+
+    "DataPath":"/home/LAB/zhangzy/ProjectData/",
+    "ModelPath":"/home/LAB/zhangzy/ProjectModels/"
+}

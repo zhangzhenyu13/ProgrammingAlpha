@@ -1,7 +1,7 @@
 {
   "ServiceName":"Answer Alpha",
   "port": 12303,
-  "listen_ip": "0.0.0.0",
+  "listen_ip": "127.0.0.1",
   "cors": "*",
  "model_config": "answerNetModel.json",
  "question_len":60,

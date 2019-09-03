@@ -27,8 +27,12 @@ class AlphaPathLookUp(object):
     DataPath="/home/LAB/zhangzy/ProjectData/"
     ModelPath="/home/LAB/zhangzy/ProjectModels/"
 
-
-
+    def update_from_file(self,filename):
+        with open(filename, "r", encoding="utf-8") as f:
+            paths=json.load(f)
+        for k,v in paths.items():
+            self.__setattr__(k,v)
+    
 class AlphaConfig(object):
     def __init__(self, config_dict:dict):
         for k, v in config_dict.items():
