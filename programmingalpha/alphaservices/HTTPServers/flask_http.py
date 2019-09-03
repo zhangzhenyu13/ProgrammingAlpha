@@ -67,3 +67,5 @@ class AlphaHTTPProxy(Process):
         http_server.serve_forever()
         #sync
         #app.run(port=self.args.port, threaded=True, host=self.args.listen_ip)
+
+        logger.info("*************service running*************:\n{}\n".format(self.args))

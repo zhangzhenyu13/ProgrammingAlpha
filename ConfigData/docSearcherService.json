@@ -1,4 +1,5 @@
 {
+  "ServiceName":"Doc Searcher",
   "port": 12301,
   "listen_ip": "0.0.0.0",
   "cors": "*"

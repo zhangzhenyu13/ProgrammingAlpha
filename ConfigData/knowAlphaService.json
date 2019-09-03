@@ -1,4 +1,5 @@
 {
+  "ServiceName":"Know Alpha",
   "port": 12302,
   "listen_ip": "0.0.0.0",
   "cors": "*",
