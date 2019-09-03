@@ -26,7 +26,7 @@
                 "seed": 829, 
                 "beam_size": 5, 
                 "min_length": 10,
-                "max_length": 60,
+                "max_length": 250,
                 "stepwise_penalty": false,
                 "length_penalty": "wu", 
                 "ratio": -0.0, 

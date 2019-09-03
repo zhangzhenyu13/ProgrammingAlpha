@@ -11,6 +11,6 @@ flask_compress
 pyentrp
 spacy
 configargparse
-torchtext
+torchtext==0.4.0
 elasticsearch==5.5.3
 

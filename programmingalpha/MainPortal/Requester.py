@@ -73,7 +73,7 @@ class RequesterServices(AlphaHTTPProxy):
 
         #query doc searcher
         posts_list=self.requestDocService(question)
-        logger.info("retrieved {} posts, with keywords as-->{}".format(len(posts_list),posts_list[0].keys()) )
+        #logger.info("retrieved {} posts, with keywords as-->{}".format(len(posts_list),posts_list[0].keys()) )
 
 
         #query doc ranker

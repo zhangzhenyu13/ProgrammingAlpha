@@ -2,7 +2,6 @@ from programmingalpha.Utility.TextPreprocessing import InformationAbstrator
 import json
 from programmingalpha import AlphaConfig, AlphaPathLookUp
 from programmingalpha.tokenizers import get_tokenizer
-import programmingalpha
 import os
 from programmingalpha.Utility import getLogger
 logger=getLogger(__name__)

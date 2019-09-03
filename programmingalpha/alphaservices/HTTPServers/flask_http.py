@@ -1,8 +1,16 @@
+# gevent for async
+from gevent import monkey
+monkey.patch_socket()
+
+from gevent.pywsgi import WSGIServer
+# gevent end
 from multiprocessing import Process, Event
 from programmingalpha import AlphaConfig, AlphaPathLookUp
 import os
 import json
 import logging
+
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -28,6 +36,7 @@ class AlphaHTTPProxy(Process):
                               'they are required for serving HTTP requests.')
 
         app = Flask(__name__)
+        app.config.update(DEBUG=True)
 
         @app.route('/methodCore', methods=['POST', 'GET'])
         @as_json
@@ -52,4 +61,9 @@ class AlphaHTTPProxy(Process):
     def run(self):
         app = self.create_flask_app()
         self.is_ready.set()
-        app.run(port=self.args.port, threaded=True, host=self.args.listen_ip)
+        #async
+        listener=(self.args.listen_ip, self.args.port)
+        http_server = WSGIServer(listener, app)
+        http_server.serve_forever()
+        #sync
+        #app.run(port=self.args.port, threaded=True, host=self.args.listen_ip)

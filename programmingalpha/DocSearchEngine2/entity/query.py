@@ -10,7 +10,7 @@ from multiprocessing import Pool
 import numpy as np
 
 
-class Query:
+class Query(object):
     def __init__(self, title, body='', tag_list=None, created_date='', num_works=20):
 
         self.title = title
@@ -20,6 +20,10 @@ class Query:
         self.searched_post_list = []
         # 多线程
         self.processes = Pool(num_works)
+    
+    def __del__(self):
+        #self.processes.join()
+        self.processes.close()
 
     def get_results(self):
         return self.searched_post_list
