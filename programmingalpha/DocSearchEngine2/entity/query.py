@@ -11,15 +11,15 @@ import numpy as np
 
 
 class Query(object):
-    def __init__(self, title, body='', tag_list=None, created_date='', num_works=20):
-
+    def __init__(self, title, body='', tag_list=None, num_works=20):
         self.title = title
         self.body = body
         self.tag_list = tag_list
-        self.created_date = created_date
+        self.created_date = ""
         self.searched_post_list = []
-        # 多线程
+        # 多线程(在flask wsgi server上会出现问题)
         self.processes = Pool(num_works)
+
     
     #def __del__(self):
         #self.processes.join()
@@ -33,8 +33,8 @@ class Query(object):
         origin_results = [posts.origin_source for posts in self.searched_post_list]
         return origin_results
 
-    def search(self, size=200):
-        search_result_list = search_es.search(self.title, size)
+    def search(self, url,size):
+        search_result_list = search_es.search(self.title, url, size)
         # Post list
         post_obj_list = []
         for result in search_result_list:
@@ -86,6 +86,7 @@ class Query(object):
 
     def calculate_title_relevance(self):
         self.processes.map_async(self.__calculate_a_title_relevance, self.searched_post_list)
+
         # for post in self.searched_post_list:
         # post.set_title_relevance(self.__calculate_a_title_relevance(post.question_obj))
 
@@ -204,9 +205,15 @@ if __name__ == '__main__':
     tag_list2 = ['<c++>', '<java>', '<python>', 'pycharm']
     tag_list3 = ['<c++>', '<JAVA>', '<python>', 'pycharm']
 
-    query = Query("How to use println in java", "Please show me how to use <code>println()<code> in java", tag_list1,
-                  "2019-5-16")
+    query = Query("How to use println in java", "Please show me how to use <code>println()<code> in java", tag_list1,)
     query.search(size=2)
     query.arrange()
     for pos in query.searched_post_list:
         print(pos.question_obj.title)
+
+    query.search(size=2)
+    query.arrange()
+
+    results = query.get_origin_results()
+    for result in results:
+        print(result)

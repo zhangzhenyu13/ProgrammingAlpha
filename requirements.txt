@@ -8,6 +8,7 @@ scikit-learn
 flask_json
 flask_cors
 flask_compress
+tornado
 pyentrp
 spacy
 configargparse

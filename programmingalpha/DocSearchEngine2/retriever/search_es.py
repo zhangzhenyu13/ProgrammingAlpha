@@ -2,9 +2,7 @@
 from elasticsearch import Elasticsearch
 
 
-def search(query="", size=200):
-    # replace your url
-    url = "http://10.1.1.9:9266"
+def search(query, url, size):
     es = Elasticsearch([url])
     doc = {
         "query": {
