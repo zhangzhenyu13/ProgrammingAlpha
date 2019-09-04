@@ -1,9 +1,8 @@
-# coding=utf-8
+from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
 import json
 
 from programmingalpha.DocSearchEngine.entity.post import PostJSONEncoder2
 from programmingalpha.DocSearchEngine.entity.query import Query
-from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
 
 
 class DocSearcherHTTPProxy(AlphaHTTPProxy):

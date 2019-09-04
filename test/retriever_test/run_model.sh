@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
+model=$1
 python build_linkprediction_model.py \
-    --encoder bert \
+    --encoder ${model} \
     --data_dir ~/ProjectData/knowNet/ \
-    --save_dir ~/ProjectModels/knowNets/bertEnc/ \
+    --save_dir ~/ProjectModels/knowNets/${model}Enc/ \
     --gradient_accumulation_steps 8 \
     --train_batch_size 16 \
     --eval_step_size 5000 \

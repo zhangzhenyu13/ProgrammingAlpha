@@ -1,6 +1,7 @@
+from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
+
 import requests
 import json
-from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
 from  programmingalpha.Utility import getLogger
 
 logger = getLogger(__name__)
@@ -39,7 +40,7 @@ class RequesterServices(AlphaHTTPProxy):
         #self.tokenizer_portal=RequesterPortal(host=config.tokenizer_service["host"], port=config.tokenizer_service["port"])
 
 
-        logger.info("main portal: requester services loaded")
+        logger.info("{} requester services initing".format(config.ServiceName))
 
     def requestDocService(self, question):
         return self.doc_searcher_portal.request(question)
@@ -74,11 +75,12 @@ class RequesterServices(AlphaHTTPProxy):
         #query doc searcher
         posts_list=self.requestDocService(question)
         #logger.info("retrieved {} posts, with keywords as-->{}".format(len(posts_list),posts_list[0].keys()) )
-
+        logger.info("receiving result from doc searcher service as :\n{}".format(json.dumps(posts_list)[:100]))
 
         #query doc ranker
         rank_query={"question":question, "posts":posts_list}
         ranks_data=self.requestKnowService(rank_query)
+        logger.info("receiving result from know alpha service as :\n{}".format(json.dumps(ranks_data)[:100]))
 
         logger.info("found {} useful posts".format(len(ranks_data)))
 
@@ -93,6 +95,7 @@ class RequesterServices(AlphaHTTPProxy):
         answer_query_data={"question":question,"posts":useful_posts}
 
         answer=self.requestAnswerService(answer_query_data)
+        logger.info("receiving result from answer alpha service as :\n{}".format(json.dumps(answer)[:100]))
 
         logger.info("finished generating answer")
 

@@ -1,8 +1,9 @@
+from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
+
 from flask import Flask, jsonify, request
 from programmingalpha.answer_generations .translation_server import TranslationServer, ServerModelError
 import os
 
-from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
 from programmingalpha import AlphaPathLookUp
 
 from.answer_alpha_input import E2EProcessor

@@ -21,9 +21,10 @@ class Query(object):
         # 多线程
         self.processes = Pool(num_works)
     
-    def __del__(self):
+    #def __del__(self):
         #self.processes.join()
-        self.processes.close()
+        #self.processes.close()
+        
 
     def get_results(self):
         return self.searched_post_list

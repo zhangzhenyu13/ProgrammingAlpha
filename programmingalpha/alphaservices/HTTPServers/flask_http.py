@@ -1,25 +1,24 @@
 # gevent for async
 from gevent import monkey
-monkey.patch_socket()
+monkey.patch_all()
 
 from gevent.pywsgi import WSGIServer
+
 # gevent end
-from multiprocessing import Process, Event
+#from multiprocessing import Process, Event
 from programmingalpha import AlphaConfig, AlphaPathLookUp
 import os
 import json
-import logging
+from  programmingalpha.Utility import getLogger
+
+logger = getLogger(__name__)
 
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-
-class AlphaHTTPProxy(Process):
+class AlphaHTTPProxy(object):
     def __init__(self,config_file):
         super().__init__()
         self.args = AlphaConfig.loadConfig( os.path.join( AlphaPathLookUp.ConfigPath, config_file ) )
-        self.is_ready = Event()
+        #self.is_ready = Event()
 
 
     def processCore(self, data):
@@ -37,6 +36,7 @@ class AlphaHTTPProxy(Process):
 
         app = Flask(__name__)
         app.config.update(DEBUG=True)
+        #print("configged")
 
         @app.route('/methodCore', methods=['POST', 'GET'])
         @as_json
@@ -44,28 +44,31 @@ class AlphaHTTPProxy(Process):
             data = request.form if request.form else request.json
             if type(data)==str:
                 data=json.loads(data)
-            print("query data--->", json.dumps(data)[:50],"... ...")
-
+            logger.info("******in service:{}, new request from {}******\nquery data--->{}".format(
+                self.args.ServiceName, request.remote_addr, json.dumps(data)[:50]+"... ...")
+                )
             try:
-                logger.info('new request from %s' % request.remote_addr)
                 return self.processCore(data)
             except Exception as e:
                 logger.error('error when handling HTTP request', exc_info=True)
                 raise JsonError(description=str(e), type=str(type(e).__name__))
 
+        #print("wrappering")
         CORS(app, origins=self.args.cors)
         FlaskJSON(app)
         Compress().init_app(app)
         return app
 
-    def run(self):
+    def start(self):
         app = self.create_flask_app()
-        self.is_ready.set()
+        #self.is_ready.set()
         #async
+        #print("created server")
         listener=(self.args.listen_ip, self.args.port)
         http_server = WSGIServer(listener, app)
+        logger.info("\n*************{} service is running*************\n".format(self.args.ServiceName))
+
         http_server.serve_forever()
         #sync
         #app.run(port=self.args.port, threaded=True, host=self.args.listen_ip)
 
-        logger.info("*************service running*************:\n{}\n".format(self.args))

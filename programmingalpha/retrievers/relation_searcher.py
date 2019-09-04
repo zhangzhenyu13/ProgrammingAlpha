@@ -1,6 +1,4 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
 
 import numpy as np
 import random
@@ -112,7 +110,6 @@ class KnowRetriever(object):
 
 
 
-from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
 class KnowAlphaHTTPProxy(AlphaHTTPProxy):
     def __init__(self, config_file):
         AlphaHTTPProxy.__init__(self,config_file)

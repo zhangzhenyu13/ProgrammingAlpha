@@ -16,7 +16,7 @@ logger=getLogger(__name__)
 
 def samplingFeatures():
 
-    collection=docDB.stackdb["features"]
+    collection=docDB.stackdb[collection_name ]
     duplicates=list(collection.find({"label_id":0}).batch_size(args.batch_size))
 
     size=len(duplicates)
@@ -76,7 +76,13 @@ if __name__ == '__main__':
 
     docDB=MongoStackExchange(host='10.1.1.9',port=50000)
     docDB.useDB(args.db)
-
-    if args.task=="features":
-        logger.info("task is "+args.task)
-        samplingFeatures()
+    supported_features={
+        "features-bert":"features-bert",
+        "features-xlnet":"features-xlnet"
+    }
+    if args.task not in supported_features:
+        raise ValueError("{} are not supported".format(args.task))
+    
+    collection_name=supported_features[args.task]
+    logger.info("task is "+args.task)
+    samplingFeatures()
