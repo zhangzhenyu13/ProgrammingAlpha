@@ -11,3 +11,4 @@ build
 dataCases
 libs/python_libs
 .vscode
+logs
