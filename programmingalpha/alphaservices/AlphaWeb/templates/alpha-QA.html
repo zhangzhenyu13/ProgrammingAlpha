@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Programming Alpha QA service</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+
+        <div class="jumbotron jumbotron-fluid">
+          <div class="container">
+            <h1 class="display-4">Programming Alpha </h1>
+            <p class="lead">Programming Alpha is a machine question-asnwering AI system.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row my-3">
+      <div class="col-12">
+        <form action="/webServices/alpha-QA" method="post">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label for="Title">Question Title (Brief Discription)</label>
+            <input type="text" class="form-control" name="Title" placeholder="Any suggestions for deep learning?">
+          </div>
+
+          <div class="form-group">
+            <label for="Tags">Question Tags (Topics of the the question)</label>
+            <input type="text" class="form-control" name="Tags"
+              placeholder="deep-learning, machine-learning, reinforcement leanring, python">
+          </div>
+
+          <div class="form-group">
+            <label for="Body">Question Body (Detailed Question Description)</label>
+            <textarea class="form-control" name="Body" rows="3"
+              placeholder="I am new to deep learning and I... maybe tensorflow or pytorch is..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg btn-block">Ask Programming Alpha</button>
+
+        </form>
+
+        <!-- <input type="submit" value="Ask"> -->
+
+      </div>
+    </div>
+
+
+
+    <div class="row">
+      <div class="col-12">
+        <ul class="list-group">
+          <!-- <li class="list-group-item">
+            <div class="progress">
+              <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25"
+                aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </li> -->
+          <li class="list-group-item active">{{ answer | safe}}</li>
+          <li class="list-group-item">{{ post1 | safe}}</li>
+          <li class="list-group-item">{{ post2 | safe}}</li>
+          <li class="list-group-item">{{ post3 | safe}}</li>
+          <li class="list-group-item">{{ post4 | safe}}</li>
+          <li class="list-group-item">{{ post5 | safe}}</li>
+
+        </ul>
+
+        <!-- <p> &nbsp;&nbsp;<strong>{{ answer | safe}}</strong> </p> -->
+
+      </div>
+    </div>
+
+    <div class="row my-5">
+      <div class="col-12">
+        <div class="alert alert-success" role="alert">
+          <h4 class="alert-heading">Some suplementary description about the system.</h4>
+          <ul>
+            <li> The service currently support programming related topics, which serves for relative
+              engineers and learners.</li>
+            <li> Our system currently <strong>DO NOT SUPPORT MATHEMATIC or CODE comprehension</strong>,
+              so 2 special words, the [CODE] (refers to a code snippet) and [MATH](refers to a mathematic
+              expression), might appear in the generated answers.</li>
+            <li>The first block above(blow the "Ask Programming Alpha" button) is the generated answer, and the rest
+              several
+              block are the brief question title of the relevant useful posts the system read
+              for answer generating. You can search them via Google search engine if you wish to attend more detailed
+              information. </li>
+            <li><a href="https://github.com/zhangzhenyu13/ProgrammingAlpha" class="card-link">Open Source Code of
+                ProgrammingAlpha(star us if the project code is useful to you)</a></li>
+          </ul>
+
+          <hr>
+          <p class="mb-0">Following are about the knowledge data and components of the system. </p>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <div class="row">
+      <div class="col-6">
+        <div class="card" style="width: 500px;">
+          <div class="card-header">
+            We are building the knowledge data base from several online community pages:
+            <div class="spinner-border text-primary" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><a href="https://stackoverflow.com/">Stack Overflow</a> </li>
+            <li class="list-group-item"><a href="https://stats.stackexchange.com/">Crossvalidated</a> </li>
+            <li class="list-group-item"><a href="https://datascience.stackexchange.com/">Artificial Intelligence</a>
+            </li>
+            <li class="list-group-item"><a href="https://ai.stackexchange.com/">Data Science</a> </li>
+          </ul>
+          <div class="card-footer">
+            Besides, we are now gathering corpus from <a href="https://www.wikipedia.org/">wikipedia</a>
+            to extend the current knowledge base.(we lack fundation support to rent ips which can boost the crawlers
+            significantly!!!)<br />
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-6">
+        <div class="card" style="width: 500px;">
+          <div class="card-header">
+            The core parts of the system:
+            <div class="spinner-border text-success" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">Document Searcher Backend Clusters: an ngram hashing(murmurhash3) + Elastic
+              Search</li>
+            <li class="list-group-item">KnowAlpha: a Knowledge Usefulness Inference Model based on deep semantic
+              comprehension </li>
+            <li class="list-group-item">AnswerAlpha: a deep semantic comprehension based text generation model. </li>
+          </ul>
+          <div class="card-footer">
+            The deep-learning models of the system are built leveraging the StoA NLP encoders (Roberta/XLNet/BERT).
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class="row">
+      <div class="col-12">
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          <strong>Copyright@</strong> zhangzy@mail.act.buaa.edu.cn
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+
+</body>
+
+</html>

@@ -1,4 +1,5 @@
-from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
+#from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
+from programmingalpha.alphaservices.HTTPServers.tornado_http import AlphaHTTPProxy
 
 import requests
 import json
@@ -20,7 +21,7 @@ class RequesterPortal(object):
         post_url= self._getPostUrl()
         logger.info("requesting: {}".format(post_url))
 
-        postData = json.dumps(post_data)
+        postData = post_data#json.dumps(post_data)
         response = requests.post(url=post_url, json= postData)
 
         results = json.loads(response.text)
@@ -33,6 +34,10 @@ class RequesterServices(AlphaHTTPProxy):
         AlphaHTTPProxy.__init__(self,config_file)
 
         config=self.args
+
+        self.search_size=config.search_size
+        self.invoke_know_alpha=config.invoke_know_alpha
+        self.top_K=config.top_K
 
         self.doc_searcher_portal=RequesterPortal(host=config.doc_searcher_service["host"], port=config.doc_searcher_service["port"])
         self.know_alpha_portal=RequesterPortal(host=config.know_alpha_service["host"], port=config.know_alpha_service["port"])
@@ -69,26 +74,35 @@ class RequesterServices(AlphaHTTPProxy):
             logger.info("no tags is available")
 
         if "size" not in question:
-            question["size"]=100
+            question["size"]=self.search_size
             logger.info("no size infor is available")
 
         #query doc searcher
         posts_list=self.requestDocService(question)
         #logger.info("retrieved {} posts, with keywords as-->{}".format(len(posts_list),posts_list[0].keys()) )
         logger.info("receiving result from doc searcher service as :\n{}".format(json.dumps(posts_list)[:100]))
-
-        #query doc ranker
-        rank_query={"question":question, "posts":posts_list}
-        ranks_data=self.requestKnowService(rank_query)
-        logger.info("receiving result from know alpha service as :\n{}".format(json.dumps(ranks_data)[:100]))
-
-        logger.info("found {} useful posts".format(len(ranks_data)))
+        
 
         useful_posts=[]
-        for rank in ranks_data:
-            post=posts_list[rank["Id"]]
-            useful_posts.append(post)
 
+        if self.invoke_know_alpha:
+            #query doc ranker
+            rank_query={"question":question, "posts":posts_list}
+            ranks_data=self.requestKnowService(rank_query)
+            logger.info("receiving result from know alpha service as :\n{}".format(json.dumps(ranks_data)[:100]))
+
+            logger.info("found {} useful posts".format(len(ranks_data)))
+
+            for rank in ranks_data:
+                post=posts_list[rank["Id"]]
+                useful_posts.append(post)
+        else:
+            for post in posts_list:
+                if "answers" in post and post["answers"]:
+                    useful_posts.append(post)
+                
+                if len(useful_posts)>self.top_K:
+                    break
         
         #query answer alpha
 

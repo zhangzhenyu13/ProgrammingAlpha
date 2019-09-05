@@ -18,5 +18,8 @@
     "port": 12304,
     "host": "localhost"
   },
-  "cors": "*"
+  "cors": "*",
+  "search_size":100,
+  "invoke_know_alpha":false,
+  "top_K":5
 }

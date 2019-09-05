@@ -27,6 +27,10 @@ class SearchHandler(RequestHandler):
         title = ''
         body = ''
         tag_list = ''
+        #print("doc seacher types", type(self.request.body), type(query_argument))
+        #print(self.request.body)
+        #print(query_argument)
+
         size = self.args.doc_size
         if 'Title' in query_argument:
             title = query_argument.get('Title')

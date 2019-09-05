@@ -35,7 +35,7 @@ class AlphaHTTPProxy(object):
                               'they are required for serving HTTP requests.')
 
         app = Flask(__name__)
-        app.config.update(DEBUG=True)
+        app.config.update(DEBUG=False)
         #print("configged")
 
         @app.route('/methodCore', methods=['POST', 'GET'])
@@ -66,7 +66,7 @@ class AlphaHTTPProxy(object):
         #print("created server")
         listener=(self.args.listen_ip, self.args.port)
         http_server = WSGIServer(listener, app)
-        logger.info("\n*************{} service is running*************\n".format(self.args.ServiceName))
+        logger.info("\n*************{} service is running({}:{})*************\n".format(self.args.ServiceName, self.args.listen_ip, self.args.port))
 
         http_server.serve_forever()
         #sync

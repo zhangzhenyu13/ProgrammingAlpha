@@ -1,31 +1,32 @@
 import json
 import os
 
+_ALphaRootPath="/home/LAB/zhangzy/"
 class AlphaPathLookUp(object):
     #bert model
-    BertRoot="/home/LAB/zhangzy/ShareModels/bert/"
-    BertBaseCased="/home/LAB/zhangzy/ShareModels/bert/base-cased/"
-    BertBaseUnCased="/home/LAB/zhangzy/ShareModels/bert/base-uncased/"
-    BertLargeCased="/home/LAB/zhangzy/ShareModels/bert/large-cased/"
-    BertLargeUnCased="/home/LAB/zhangzy/ShareModels/bert/large-uncased/"
-    BertLargeCasedMasking="/home/LAB/zhangzy/ShareModels/bert/large-cased-whole-masking/"
-    BertLargeUnCasedMasking="/home/LAB/zhangzy/ShareModels/bert/large-uncased-whole-masking/"
+    BertRoot=os.path.join(_ALphaRootPath,"ShareModels/bert/")
+    BertBaseCased=os.path.join(_ALphaRootPath,"ShareModels/bert/base-cased/")
+    BertBaseUnCased=os.path.join(_ALphaRootPath,"ShareModels/bert/base-uncased/")
+    BertLargeCased=os.path.join(_ALphaRootPath,"ShareModels/bert/large-cased/")
+    BertLargeUnCased=os.path.join(_ALphaRootPath,"ShareModels/bert/large-uncased/")
+    BertLargeCasedMasking=os.path.join(_ALphaRootPath,"ShareModels/bert/large-cased-whole-masking/")
+    BertLargeUnCasedMasking=os.path.join(_ALphaRootPath,"ShareModels/bert/large-uncased-whole-masking/")
     #gpt-2 model
-    GPT2Base="/home/LAB/zhangzy/ShareModels/gpt-2/base/"
-    GPT2Medium="/home/LAB/zhangzy/ShareModels/gpt-2/medium/"
+    GPT2Base=os.path.join(_ALphaRootPath,"ShareModels/gpt-2/base/")
+    GPT2Medium=os.path.join(_ALphaRootPath,"ShareModels/gpt-2/medium/")
     #XLNet
-    XLNetBaseCased="/home/LAB/zhangzy/ShareModels/xlnet/base-cased"
-    XLNetLargeCased="/home/LAB/zhangzy/ShareModels/xlnet/large-cased"
+    XLNetBaseCased=os.path.join(_ALphaRootPath,"ShareModels/xlnet/base-cased")
+    XLNetLargeCased=os.path.join(_ALphaRootPath,"ShareModels/xlnet/large-cased")
     #RoBerta
-    RoBertaBase="/home/LAB/zhangzy/ShareModels/roberta/base/"
-    RoBertaLarge="/home/LAB/zhangzy/ShareModels/roberta/large/"
+    RoBertaBase=os.path.join(_ALphaRootPath,"ShareModels/roberta/base/")
+    RoBertaLarge=os.path.join(_ALphaRootPath,"ShareModels/roberta/large/")
 
     #global project path
-    ConfigPath="/home/LAB/zhangzy/ProgrammingAlpha/ConfigData/"
-    DataCases="/home/LAB/zhangzy/ProgrammingAlpha/dataCases/"
+    ConfigPath=os.path.join(_ALphaRootPath,"ProgrammingAlpha/ConfigData/")
+    DataCases=os.path.join(_ALphaRootPath,"ProgrammingAlpha/dataCases/")
 
-    DataPath="/home/LAB/zhangzy/ProjectData/"
-    ModelPath="/home/LAB/zhangzy/ProjectModels/"
+    DataPath=os.path.join(_ALphaRootPath,"ProjectData/")
+    ModelPath=os.path.join(_ALphaRootPath,"ProjectModels/")
 
     def update_from_file(self,filename):
         with open(filename, "r", encoding="utf-8") as f:
@@ -45,7 +46,7 @@ class AlphaConfig(object):
         config=cls(config)
         return config
 
-    def saveConfig(self, filename):
+    def saveConfig(self, config, filename):
         with open(filename, "w") as f:
             if type(config)==AlphaConfig:
                 config=config.__dict__

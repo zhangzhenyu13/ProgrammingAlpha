@@ -43,7 +43,7 @@
                 "dump_beam": "", 
                 "n_best": 1, 
                 "batch_size": 4,
-                "gpu": -1,
+                "gpu": 0,
                 "sample_rate": 16000, 
                 "window_size": 0.02, 
                 "window_stride": 0.01, 

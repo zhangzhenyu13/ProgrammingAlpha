@@ -1,4 +1,5 @@
-from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
+#from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
+from programmingalpha.alphaservices.HTTPServers.tornado_http import AlphaHTTPProxy
 
 import numpy as np
 import random

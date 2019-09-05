@@ -75,11 +75,11 @@ def main():
         raise ValueError("data dir does not exists")
 
     #load train data
-    train_loader=FeatureLoader(os.path.join(args.data_dir, "features-train"), batch_size=train_batch_size)
+    train_loader=FeatureLoader(os.path.join(args.data_dir, "{}-features-train".format(args.encoder)), batch_size=train_batch_size)
 
 
     #load valid data
-    eval_loader=FeatureLoader(os.path.join(args.data_dir, "features-valid"), batch_size=args.eval_batch_size)
+    eval_loader=FeatureLoader(os.path.join(args.data_dir, "{}-features-valid".format(args.encoder)), batch_size=args.eval_batch_size)
 
 
     #configure model running parameters

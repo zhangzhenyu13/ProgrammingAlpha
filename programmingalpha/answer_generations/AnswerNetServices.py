@@ -1,4 +1,5 @@
-from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
+#from programmingalpha.alphaservices.HTTPServers.flask_http import AlphaHTTPProxy
+from programmingalpha.alphaservices.HTTPServers.tornado_http import AlphaHTTPProxy
 
 from flask import Flask, jsonify, request
 from programmingalpha.answer_generations .translation_server import TranslationServer, ServerModelError
@@ -39,4 +40,4 @@ class AnswerAlphaHTTPProxy(AlphaHTTPProxy):
             out['error'] = str(e)
             out['status'] = STATUS_ERROR
 
-        return jsonify(out)
+        return out
