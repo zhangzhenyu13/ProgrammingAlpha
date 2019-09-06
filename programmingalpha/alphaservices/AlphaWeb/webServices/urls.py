@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('alpha-QA', views.getAnswer, name='ask question'),
-    path('index', views.index, name='ask question')
+    path('alpha-ask', views.getAnswer, name='ask question'),
+    path('alpha-QA', views.index, name='enter web page')
 
 ]

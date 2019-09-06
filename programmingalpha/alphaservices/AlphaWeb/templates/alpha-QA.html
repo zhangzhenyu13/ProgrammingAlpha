@@ -26,29 +26,30 @@
 
     <div class="row my-3">
       <div class="col-12">
-        <form action="/webServices/alpha-QA" method="post">
-          {% csrf_token %}
-
+        <div>
           <div class="form-group">
             <label for="Title">Question Title (Brief Discription)</label>
-            <input type="text" class="form-control" name="Title" placeholder="Any suggestions for deep learning?">
+            <input type="text" class="form-control" id="question-title"
+              placeholder="Any suggestions for deep learning?">
           </div>
 
           <div class="form-group">
             <label for="Tags">Question Tags (Topics of the the question)</label>
-            <input type="text" class="form-control" name="Tags"
+            <input type="text" class="form-control" id="question-tags"
               placeholder="deep-learning, machine-learning, reinforcement leanring, python">
           </div>
 
           <div class="form-group">
             <label for="Body">Question Body (Detailed Question Description)</label>
-            <textarea class="form-control" name="Body" rows="3"
+            <textarea class="form-control" id="question-body" rows="3"
               placeholder="I am new to deep learning and I... maybe tensorflow or pytorch is..."></textarea>
           </div>
 
-          <button type="submit" class="btn btn-primary btn-lg btn-block">Ask Programming Alpha</button>
+          <button id="submit-btn" class="btn btn-success btn-lg btn-block ">Ask Programming Alpha 
+              <span id="alpha-loading" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" ></span>
+          </button>
 
-        </form>
+        </div>
 
         <!-- <input type="submit" value="Ask"> -->
 
@@ -59,19 +60,14 @@
 
     <div class="row">
       <div class="col-12">
-        <ul class="list-group">
+        <ul class="list-group" id="result">
           <!-- <li class="list-group-item">
             <div class="progress">
               <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25"
                 aria-valuemin="0" aria-valuemax="100"></div>
             </div>
           </li> -->
-          <li class="list-group-item active">{{ answer | safe}}</li>
-          <li class="list-group-item">{{ post1 | safe}}</li>
-          <li class="list-group-item">{{ post2 | safe}}</li>
-          <li class="list-group-item">{{ post3 | safe}}</li>
-          <li class="list-group-item">{{ post4 | safe}}</li>
-          <li class="list-group-item">{{ post5 | safe}}</li>
+
 
         </ul>
 
@@ -171,7 +167,50 @@
 
   </div>
 
+  <script>
+    function render(data) {
+      var answer = data.answer;
+      var posts = data.posts;
 
+      var html = ``;
+      html += `<li class="list-group-item active">${answer}</li>`;
+      posts.forEach(post => {
+        html += `<li class="list-group-item">${post}</li>`;
+      });
+
+      document.querySelector('#result').innerHTML = html;
+    }
+
+
+    var btn = document.querySelector('#submit-btn');
+    var loading=document.querySelector('#alpha-loading');
+
+
+    btn.addEventListener('click', function () {
+      loading.classList.remove('d-none');
+      var title = document.querySelector('#question-title').value;
+      var tags = document.querySelector('#question-tags').value;
+      var body = document.querySelector('#question-body').value;
+
+      var data = {
+        Title: title,
+        Tags: tags,
+        Body: body,
+        //csrfmiddlewaretoken: 
+      };
+
+      fetch('/webServices/alpha-ask', {
+        headers: {"Content-Type":"application/json", "X-CSRFToken":'{{ csrf_token }}'},
+        body: JSON.stringify(data),
+        mode: "cors",
+        method: "POST"
+      }).then(res => res.json()).then(data => {
+        render(data);
+        loading.classList.add('d-none');
+      })
+
+    });
+  </script>
 </body>
 
 </html>

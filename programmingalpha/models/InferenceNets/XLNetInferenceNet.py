@@ -1,7 +1,6 @@
 import torch
 from pytorch_transformers import XLNetModel, XLNetConfig
 from pytorch_transformers.modeling_utils import SequenceSummary
-import programmingalpha
 import math
 from torch.nn import CrossEntropyLoss
 from copy import deepcopy
@@ -17,7 +16,7 @@ class LinkNet(InferenceNet):
     def __init__(self, model_path=None, num_labels=4 ):
         super(LinkNet, self).__init__(model_path, num_labels)
         self.encoder ,self.config= self._load_model(XLNetModel, XLNetConfig)
-        self.encoderl.word_embedding=expandEmbeddingByN(self.encoder.word_embedding, 2, last=True)
+        self.encoder.word_embedding=expandEmbeddingByN(self.encoder.word_embedding, 2, last=True)
 
         self.summary=SequenceSummary(self.config)
         self.classifier  = torch.nn.Linear(self.config.d_model, self.num_labels)
