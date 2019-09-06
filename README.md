@@ -398,7 +398,7 @@ Please give a cite to our work if you want use the project somewhere else.
 
 <pre><code>@INPROCEEDINGS{programmingAlpha, 
 author={Zhenyu Zhang, Hailong Sun, HongyuZhang, PengboCai}, 
-title={The KnowAlpha: Automatically Recommending Useful Information to Programmers through Semantic Understanding
+title={The KnowAlpha: Finding Useful Information to Programmers through Semantic Understanding
 },
 year={2019},
 url={https://github.com/zhangzhenyu13/ProgrammingAlpha} 

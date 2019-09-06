@@ -11,18 +11,23 @@ import numpy as np
 
 
 class Query(object):
-    def __init__(self, title, body='', tag_list=None, num_works=20):
+    def __init__(self, title, body='', tag_list=None, num_works=2):
         self.title = title
         self.body = body
         self.tag_list = tag_list
         self.created_date = ""
         self.searched_post_list = []
         # 多线程(在flask wsgi server上会出现问题)
+<<<<<<< HEAD
         self.processes = Pool(num_works)
 
     #def __del__(self):
     #    self.processes.close()
     #    self.processes.join()
+=======
+        self.num_works = num_works
+        # self.processes = Pool(num_works)
+>>>>>>> bd540caad713da371af9e715d070b6870303b20a
 
     def get_results(self):
         return self.searched_post_list
@@ -31,7 +36,7 @@ class Query(object):
         origin_results = [posts.origin_source for posts in self.searched_post_list]
         return origin_results
 
-    def search(self, url,size):
+    def search(self, url, size):
         search_result_list = search_es.search(self.title, url, size)
         # Post list
         post_obj_list = []
@@ -83,7 +88,13 @@ class Query(object):
         return ret
 
     def calculate_title_relevance(self):
+<<<<<<< HEAD
         self.processes.map_async(self.__calculate_a_title_relevance, self.searched_post_list)
+=======
+        with Pool(self.num_works) as processes:
+            processes.map_async(self.__calculate_a_title_relevance, self.searched_post_list)
+
+>>>>>>> bd540caad713da371af9e715d070b6870303b20a
         # for post in self.searched_post_list:
         # post.set_title_relevance(self.__calculate_a_title_relevance(post.question_obj))
 
@@ -97,7 +108,8 @@ class Query(object):
         return ret
 
     def calculate_tag_relevance(self):
-        self.processes.map_async(self.__calculate_a_tag_relevance, self.searched_post_list)
+        with Pool(self.num_works) as processes:
+            processes.map_async(self.__calculate_a_tag_relevance, self.searched_post_list)
         # for post in self.searched_post_list:
         #     post.set_tag_relevance(self.__calculate_a_tag_relevance(post.question_obj))
 
@@ -115,8 +127,8 @@ class Query(object):
         return score
 
     def calculate_score(self, alpha=0.8):
-        self.processes.map_async(self.__calculate_a_score, self.searched_post_list)
-
+        with Pool(self.num_works) as processes:
+            processes.map_async(self.__calculate_a_score, self.searched_post_list)
         # for post in self.searched_post_list:
         #     post.set_score(self.__calculate_a_score(post, alpha))
 
@@ -204,12 +216,12 @@ if __name__ == '__main__':
     tag_list3 = ['<c++>', '<JAVA>', '<python>', 'pycharm']
 
     query = Query("How to use println in java", "Please show me how to use <code>println()<code> in java", tag_list1,)
-    query.search(size=2)
+    query.search(url="http://10.1.1.9:9266", size=2)
     query.arrange()
     for pos in query.searched_post_list:
         print(pos.question_obj.title)
 
-    query.search(size=2)
+    query.search(url="http://10.1.1.9:9266", size=2)
     query.arrange()
 
     results = query.get_origin_results()
