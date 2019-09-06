@@ -27,12 +27,13 @@ class AlphaHTTPProxy(object):
 
     def create_tornado_app(self):
         processCore=self.processCore
-        
+        ServiceName=self.args.ServiceName
         class ALphaHandler(RequestHandler):
             
             @tornado.web.asynchronous
             @tornado.gen.coroutine
             def post(self):
+                
                 query_argument = json.loads(self.request.body)
                 results=processCore(query_argument)
 

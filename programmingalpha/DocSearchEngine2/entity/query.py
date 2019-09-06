@@ -18,16 +18,8 @@ class Query(object):
         self.created_date = ""
         self.searched_post_list = []
         # 多线程(在flask wsgi server上会出现问题)
-<<<<<<< HEAD
-        self.processes = Pool(num_works)
-
-    #def __del__(self):
-    #    self.processes.close()
-    #    self.processes.join()
-=======
         self.num_works = num_works
         # self.processes = Pool(num_works)
->>>>>>> bd540caad713da371af9e715d070b6870303b20a
 
     def get_results(self):
         return self.searched_post_list
@@ -88,13 +80,9 @@ class Query(object):
         return ret
 
     def calculate_title_relevance(self):
-<<<<<<< HEAD
-        self.processes.map_async(self.__calculate_a_title_relevance, self.searched_post_list)
-=======
         with Pool(self.num_works) as processes:
             processes.map_async(self.__calculate_a_title_relevance, self.searched_post_list)
 
->>>>>>> bd540caad713da371af9e715d070b6870303b20a
         # for post in self.searched_post_list:
         # post.set_title_relevance(self.__calculate_a_title_relevance(post.question_obj))
 

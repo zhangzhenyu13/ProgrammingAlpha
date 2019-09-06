@@ -1,7 +1,7 @@
 import json
 import os
 
-_ALphaRootPath="/home/LAB/zhangzy/"
+_ALphaRootPath="/home/zhangzy/"
 class AlphaPathLookUp(object):
     #bert model
     BertRoot=os.path.join(_ALphaRootPath,"ShareModels/bert/")

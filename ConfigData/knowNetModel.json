@@ -6,6 +6,6 @@
     "name": "bert",
     "worker_num":10,
     "verbose":0,
-    "dict_path":"/home/LAB/zhangzy/ProjectModels/knowNets/bertEnc/model_75000.bin",
+    "dict_path":"/home/zhangzy/ProjectModels/knowNets/bertEnc/model.bin",
     "use_gpu":true
 }

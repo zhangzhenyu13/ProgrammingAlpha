@@ -19,7 +19,6 @@
     "host": "localhost"
   },
   "cors": "*",
-  "search_size":100,
-  "invoke_know_alpha":false,
+  "invoke_know_alpha":true,
   "top_K":5
 }

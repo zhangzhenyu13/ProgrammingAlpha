@@ -8,5 +8,5 @@
   "context_len": 450,
   "tokenizer": "xlnet",
   "model": "xlnet",
-  "model_path": "/home/LAB/zhangzy/ShareModels/xlnet/base-cased"
+  "model_path": "/home/zhangzy/ShareModels/xlnet/base-cased"
 }

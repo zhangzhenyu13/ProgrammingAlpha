@@ -23,7 +23,8 @@ class RequesterPortal(object):
 
         postData = post_data#json.dumps(post_data)
         response = requests.post(url=post_url, json= postData)
-
+        if response.status_code!=200:
+            return None
         results = json.loads(response.text)
 
         return results
@@ -35,7 +36,6 @@ class RequesterServices(AlphaHTTPProxy):
 
         config=self.args
 
-        self.search_size=config.search_size
         self.invoke_know_alpha=config.invoke_know_alpha
         self.top_K=config.top_K
 
@@ -60,6 +60,7 @@ class RequesterServices(AlphaHTTPProxy):
         return self.tokenizer_portal.request(t_data)
 
     def processCore(self, question):
+        
         #data struct
         assert "Title" in question
         #question["Title"]=question["title"]
@@ -73,12 +74,11 @@ class RequesterServices(AlphaHTTPProxy):
             question["Tags"]=[]
             logger.info("no tags is available")
 
-        if "size" not in question:
-            question["size"]=self.search_size
-            logger.info("no size infor is available")
-
+        
         #query doc searcher
         posts_list=self.requestDocService(question)
+        if posts_list is None:
+            return {}
         #logger.info("retrieved {} posts, with keywords as-->{}".format(len(posts_list),posts_list[0].keys()) )
         logger.info("receiving result from doc searcher service as :\n{}".format(json.dumps(posts_list)[:100]))
         
@@ -89,6 +89,8 @@ class RequesterServices(AlphaHTTPProxy):
             #query doc ranker
             rank_query={"question":question, "posts":posts_list}
             ranks_data=self.requestKnowService(rank_query)
+            if ranks_data is None:
+                return {}
             logger.info("receiving result from know alpha service as :\n{}".format(json.dumps(ranks_data)[:100]))
 
             logger.info("found {} useful posts".format(len(ranks_data)))
@@ -109,6 +111,8 @@ class RequesterServices(AlphaHTTPProxy):
         answer_query_data={"question":question,"posts":useful_posts}
 
         answer=self.requestAnswerService(answer_query_data)
+        if answer is None:
+            return {}
         logger.info("receiving result from answer alpha service as :\n{}".format(json.dumps(answer)[:100]))
 
         logger.info("finished generating answer")

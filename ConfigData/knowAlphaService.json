@@ -12,6 +12,6 @@
   "cls_last":false,
   "tokenizer":"bert",
   "model": "bert",
-  "model_path":"/home/LAB/zhangzy/ShareModels/bert/base-uncased",
+  "model_path":"/home/zhangzy/ShareModels/bert/base-uncased",
   "model_config_file": "knowNetModel.json"
 }

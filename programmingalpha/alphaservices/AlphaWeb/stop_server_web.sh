@@ -1,0 +1,1 @@
+bash /home/zhangzy/ProgrammingAlpha/programmingalpha/Utility/namekill.sh 'manage.py'

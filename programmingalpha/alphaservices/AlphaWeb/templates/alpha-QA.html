@@ -18,6 +18,7 @@
           <div class="container">
             <h1 class="display-4">Programming Alpha </h1>
             <p class="lead">Programming Alpha is a machine question-asnwering AI system.</p>
+            <p class="lead">You would prefer to ask some concrete questions here.</p>
           </div>
         </div>
       </div>
@@ -191,7 +192,7 @@
       var title = document.querySelector('#question-title').value;
       var tags = document.querySelector('#question-tags').value;
       var body = document.querySelector('#question-body').value;
-
+      btn.setAttribute("disabled", true);
       var data = {
         Title: title,
         Tags: tags,
@@ -207,6 +208,8 @@
       }).then(res => res.json()).then(data => {
         render(data);
         loading.classList.add('d-none');
+        btn.setAttribute("disabled", false);
+
       })
 
     });

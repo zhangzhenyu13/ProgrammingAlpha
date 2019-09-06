@@ -117,21 +117,19 @@ class KnowAlphaHTTPProxy(AlphaHTTPProxy):
         args=self.args
         self.alphaModel=KnowRetriever(os.path.join(AlphaPathLookUp.ConfigPath, args.model_config_file))
         self.feature_processor=FeatureProcessor(os.path.join(AlphaPathLookUp.ConfigPath, config_file))
-        self.workers=Pool(args.num_workers)
+        self.num_workers=args.num_workers
         self.top_K=args.top_K
     
-    def __del__(self):
-        self.workers.close()
-        self.workers.join()
 
     def processCore(self, data):
         question, posts= data["question"], data["posts"]
         
         if len(posts)<15:
-            features=self.feature_processor.process([question], posts)
+            features=self.feature_processor.process(question, posts)
         else:
             records=map(lambda q, p: {"question":q, "post":p, "label":"direct"}, [question]*len(posts), posts) 
-            features=self.workers.map(self.feature_processor.batch_process_core, records)
+            with Pool(self.num_workers) as workers:
+                features=workers.map(self.feature_processor.batch_process_core, records)
         
         res= self.alphaModel.relationPredict(features)
         

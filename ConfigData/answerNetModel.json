@@ -1,11 +1,11 @@
 {
-    "models_root": "/home/LAB/zhangzy/ProjectModels/answerNets/xlnetGen/",
+    "models_root": "/home/zhangzy/ProjectModels/answerNets/xlnetGen/",
     "models": [
         {
             "id": 0,
-            "model": "model_step_30000.pt",
-            "timeout": 600,
-            "on_timeout": "to_cpu",
+            "model": "model.pt",
+            "timeout": -1,
+            "on_timeout": "unload",
             "load": true,
             "opt": {
                 "fp32": false,
