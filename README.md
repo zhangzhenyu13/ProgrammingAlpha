@@ -372,14 +372,24 @@ Deploying The ProgrammingAlpha System
 <p><strong>User Interface</strong></p>
 <ul>
 <li>
-We currently implemented a very simple answering outlook asking box, which is available in https://github.com/zhangzhenyu13/ProgrammingAlpha/tree/master/alphaservices.
+We currently implemented a  simple web page, which is available in https://github.com/zhangzhenyu13/ProgrammingAlpha/tree/master/alphaservices/AlphaWeb. 
 </li>
 <li>
-The restful API for text-generation network can be started following instrcutions here http://forum.opennmt.net/t/simple-opennmt-py-rest-server/1392. 
+  To start the web page service:
+  cd /path/to/repo/programmingalpha/alphaservices/AlphaWeb, then
+just use the bash to run the start_server_web.sh.
 </li>
 <li>
-The full one-shot deployment is under working now...
+To start the backend service:
+  just use bash to run  /path/to/repo/test/servers_test.sh.
 </li>
+  <li>
+    Make sure the service config files are set properly so that each service can be routed properly by the portal backend service. Those config files are contained in
+    /path/to/repo/ConfigData
+  </li>
+  <li>
+    After finishing above steps, you can access the service online: ip:port/webServices/alpha-QA, where ip and port are set via the config files.
+    </li>
 </ul>
 
 <h3><a id="user-content-please-cite-our-work-as" class="anchor" aria-hidden="true" href="#please-cite-our-work-as"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>
@@ -393,13 +403,14 @@ title={The KnowAlpha: Automatically Recommending Useful Information to Programme
 year={2019},
 url={https://github.com/zhangzhenyu13/ProgrammingAlpha} 
 }
-
+</pre></code>
 <pre><code>@INPROCEEDINGS{programmingAlpha, 
 author={Zhenyu Zhang, Hailong Sun, HongyuZhang, PengboCai}, 
 title={AnsAlpha: Towards Automatic Answering of Developers’ Questions through Comprehension and Generation},
 year={2019},
 url={https://github.com/zhangzhenyu13/ProgrammingAlpha} 
 }
+</pre></code>
   </body>
 </html>
 
