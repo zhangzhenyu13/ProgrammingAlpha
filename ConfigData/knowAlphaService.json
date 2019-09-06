@@ -1,8 +1,9 @@
 {
   "ServiceName":"Know Alpha",
   "port": 12302,
-  "listen_ip": "0.0.0.0",
+  "listen_ip": "127.0.0.1",
   "cors": "*",
+  "num_workers":20,
   "top_K":5,
   "question_len":80,
   "answers":3,

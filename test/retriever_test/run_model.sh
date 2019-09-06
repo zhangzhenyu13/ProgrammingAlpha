@@ -12,4 +12,5 @@ python build_linkprediction_model.py \
     --warmup_steps 8000 \
     --train_verbose 200 \
     --train_load_size 1000000 \
-    --eval_load_size 10000
+    --eval_load_size 10000 \
+    --overwrite 

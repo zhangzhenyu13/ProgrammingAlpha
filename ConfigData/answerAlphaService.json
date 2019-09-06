@@ -1,17 +1,12 @@
 {
-  "ServiceName":"Answer Alpha",
+  "ServiceName": "Answer Alpha",
   "port": 12303,
   "listen_ip": "127.0.0.1",
   "cors": "*",
- "model_config": "answerNetModel.json",
- "question_len":60,
- "context_len":450,
- "tokenizer":"xlnet",
+  "model_config": "answerNetModel.json",
+  "question_len": 60,
+  "context_len": 450,
+  "tokenizer": "xlnet",
   "model": "xlnet",
-  "model_path":"/home/LAB/zhangzy/ShareModels/xlnet/base-cased"
+  "model_path": "/home/LAB/zhangzy/ShareModels/xlnet/base-cased"
 }
-
-
-
-
-

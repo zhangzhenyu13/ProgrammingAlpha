@@ -7,6 +7,7 @@ from copy import deepcopy
 from programmingalpha.Utility import getLogger
 from .InferenceNetBase import InferenceNet
 from ..import expandEmbeddingByN
+from torch import nn
 
 logger = getLogger(__name__)
 
@@ -20,11 +21,12 @@ class LinkNet(InferenceNet):
 
         self.summary=SequenceSummary(self.config)
         self.classifier  = torch.nn.Linear(self.config.d_model, self.num_labels)
+        self.softmax= nn.Softmax()
 
     def forward(self, input_ids, token_type_ids=None, labels=None):
         outputs=self.encoder.forward(input_ids, token_type_ids=token_type_ids)
         pooled_output=self.summary(outputs[0])
-        logits = self.classifier(pooled_output)
+        logits = self.softmax(self.classifier(pooled_output) )
 
         if labels is not None:
             loss_fct_classification = CrossEntropyLoss()

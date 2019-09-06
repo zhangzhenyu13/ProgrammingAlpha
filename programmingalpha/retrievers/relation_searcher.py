@@ -11,7 +11,7 @@ from programmingalpha.models.InferenceNets  import construct_inference_net
 from programmingalpha.Utility import getLogger
 from .retriever_input_process import   FeatureProcessor
 from tqdm import tqdm
-
+from multiprocessing import Pool
 logger=getLogger(__name__)
 
 class KnowRetriever(object):
@@ -35,7 +35,7 @@ class KnowRetriever(object):
             n_gpu=torch.cuda.device_count()
             if n_gpu<2:
                 device=torch.device("cuda:0") 
-                map_location='cuda:{}'.format(config.gpu_rank)
+                map_location='cuda:0'
             else:
                 device= torch.device("cuda")
                 map_location='cuda'
@@ -117,11 +117,22 @@ class KnowAlphaHTTPProxy(AlphaHTTPProxy):
         args=self.args
         self.alphaModel=KnowRetriever(os.path.join(AlphaPathLookUp.ConfigPath, args.model_config_file))
         self.feature_processor=FeatureProcessor(os.path.join(AlphaPathLookUp.ConfigPath, config_file))
+        self.workers=Pool(args.num_workers)
         self.top_K=args.top_K
+    
+    def __del__(self):
+        self.workers.close()
+        self.workers.join()
+
     def processCore(self, data):
         question, posts= data["question"], data["posts"]
-        features=self.feature_processor.process(question, posts)
-
+        
+        if len(posts)<15:
+            features=self.feature_processor.process([question], posts)
+        else:
+            records=map(lambda q, p: {"question":q, "post":p, "label":"direct"}, [question]*len(posts), posts) 
+            features=self.workers.map(self.feature_processor.batch_process_core, records)
+        
         res= self.alphaModel.relationPredict(features)
         
         ranks=[]

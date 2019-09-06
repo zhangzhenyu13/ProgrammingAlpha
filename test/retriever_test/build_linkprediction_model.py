@@ -56,7 +56,7 @@ def saveModel(model, train_step):
 def main():
 
     if os.path.exists(args.save_dir) and os.listdir(args.save_dir):
-        if args.overwrite==False and input("Save directory ({}) already exists and is not empty, rewrite the files?(Y/N)\n".format(args.output_dir)) not in ("Y","y"):
+        if args.overwrite==False and input("Save directory ({}) already exists and is not empty, rewrite the files?(Y/N)\n".format(args.save_dir)) not in ("Y","y"):
             raise ValueError("Output directory ({}) already exists and is not empty.".format(args.save_dir))
     if not os.path.exists(args.save_dir):
         os.makedirs(args.save_dir, exist_ok=True)

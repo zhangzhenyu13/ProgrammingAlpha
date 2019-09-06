@@ -47,11 +47,12 @@ class LinkNet(InferenceNet):
         self.encoder.embeddings.word_embeddings=expandEmbeddingByN(self.encoder.embeddings.word_embeddings, 2, last=True)
 
         self.classifier = nn.Linear(self.config.hidden_size, self.num_labels)
+        self.softmax= nn.Softmax()
 
     def forward(self, input_ids, token_type_ids=None, labels=None):
         outputs=self.encoder.forward(input_ids, token_type_ids=token_type_ids)
         pooled_output=outputs[1]
-        logits = self.classifier(pooled_output)
+        logits = self.softmax(self.classifier(pooled_output) )
 
         if labels is not None:
             loss_fct_classification = CrossEntropyLoss()
@@ -70,6 +71,8 @@ class KnowNet(InferenceNet):
 
         self.attnpooler=AttnBertPooler(self.config)
         self.classifier = nn.Linear(self.config.hidden_size*2, self.num_labels)
+        self.softmax= nn.Softmax()
+
         self.num_labels=self.num_labels
 
 
@@ -79,7 +82,7 @@ class KnowNet(InferenceNet):
 
         pooled_output = self.attnpooler(sequence_output)
 
-        logits = self.classifier(pooled_output)
+        logits = self.softmax(self.classifier(pooled_output) )
 
         if labels is not None:
             loss_fct_classification = CrossEntropyLoss()

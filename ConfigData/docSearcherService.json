@@ -1,7 +1,7 @@
 {
   "ServiceName":"Doc Searcher",
   "port": 12301,
-  "listen_ip": "0.0.0.0",
+  "listen_ip": "127.0.0.1",
   "cors": "*",
   "es_url": "http://10.1.1.9:9266",
   "num_works": 20,

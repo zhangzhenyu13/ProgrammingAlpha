@@ -20,11 +20,9 @@ class Query(object):
         # 多线程(在flask wsgi server上会出现问题)
         self.processes = Pool(num_works)
 
-    
     #def __del__(self):
-        #self.processes.join()
-        #self.processes.close()
-        
+    #    self.processes.close()
+    #    self.processes.join()
 
     def get_results(self):
         return self.searched_post_list
@@ -86,7 +84,6 @@ class Query(object):
 
     def calculate_title_relevance(self):
         self.processes.map_async(self.__calculate_a_title_relevance, self.searched_post_list)
-
         # for post in self.searched_post_list:
         # post.set_title_relevance(self.__calculate_a_title_relevance(post.question_obj))
 
@@ -119,6 +116,7 @@ class Query(object):
 
     def calculate_score(self, alpha=0.8):
         self.processes.map_async(self.__calculate_a_score, self.searched_post_list)
+
         # for post in self.searched_post_list:
         #     post.set_score(self.__calculate_a_score(post, alpha))
 

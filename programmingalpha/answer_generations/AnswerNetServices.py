@@ -8,6 +8,8 @@ import os
 from programmingalpha import AlphaPathLookUp
 
 from.answer_alpha_input import E2EProcessor
+from programmingalpha.Utility import getLogger
+logger=getLogger(__name__)
 
 STATUS_OK = "ok"
 STATUS_ERROR = "error"
@@ -32,10 +34,15 @@ class AnswerAlphaHTTPProxy(AlphaHTTPProxy):
             assert len(translation) == len(query_data)
             assert len(scores) == len(query_data)
             
-            out = {"src": q_c_text, "tgt": translation[0], "tgt_txt": self.e2e_processor.processDec(translation[0]),
+            out={"tgt_txt": self.e2e_processor.processDec(translation[0])}
+
+            '''
+            gen_logs = {"src": q_c_text, "tgt": translation[0], "tgt_txt": out["tgt_txt"],
                      "n_best": n_best,
                      "pred_score": scores[0]}
-            
+            logger.info("{}".format(gen_logs))
+            '''
+
         except ServerModelError as e:
             out['error'] = str(e)
             out['status'] = STATUS_ERROR
