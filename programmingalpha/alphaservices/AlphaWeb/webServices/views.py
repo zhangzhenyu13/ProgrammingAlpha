@@ -3,6 +3,7 @@ from django.http import HttpResponse,HttpRequest
 from .qamodel import process
 from html import escape
 import json
+from textblob import TextBlob
 from programmingalpha.Utility import getLogger
 logger=getLogger(__name__)
 #def process(q):return "No"
@@ -38,7 +39,13 @@ def getAnswer(request:HttpRequest):
             question["Tags"]=list(map(lambda tag: " ".join(tag.strip().split()).replace(' ','-') ,question["Tags"].split(",")) )
         else:
             question["Tags"]=[]
-
+        body=question["Body"]
+        sents=[]
+        for sent in TextBlob(body).sentences:
+            sents.append(
+                "<p>"+sent.string+"</p>"
+            )
+        question["Body"]="".join(sents)
         #print("",question)
         res=process(question )
         posts=list(map(lambda post:post["Title"], res["useful-reading-posts"]))
