@@ -1,6 +1,6 @@
 from programmingalpha.DataSet.DBLoader import MongoStackExchange
 import argparse
-import numpy as np
+import random
 import tqdm
 from programmingalpha import AlphaPathLookUp
 import os
@@ -55,7 +55,7 @@ def samplingFeatures():
     
     logger.info("laebls:{}".format(Counter(labels)))
 
-    np.random.shuffle(dataSet)
+    random.shuffle(dataSet)
 
     sample_file=os.path.join(AlphaPathLookUp.DataPath,"knowNet/data.json")
 

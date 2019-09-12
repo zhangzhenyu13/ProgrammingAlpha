@@ -151,6 +151,8 @@ def main():
         train_step=0
         step=0
 
+        tr_loss=0.0
+
         train_dataloader = iter(train_loader.load_data(args.train_load_size) )
         model.train()
         while train_step< t_total:
@@ -176,6 +178,7 @@ def main():
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
 
+            tr_loss+=loss.item()
             step+=1
             
             if step % args.gradient_accumulation_steps == 0:
@@ -186,8 +189,8 @@ def main():
                 
                 #verbose after training steps
                 if train_step%args.train_verbose==0:
-                    logger.info("training steps: #{}".format(train_step))
-
+                    logger.info("training steps: #{}, loss={}".format(train_step, tr_loss/args.train_verbose))
+                    tr_loss=0.0
 
                 # save Model
                 if train_step%args.eval_step_size==0:
@@ -265,7 +268,7 @@ if __name__ == "__main__":
     #optimizer parameters
     parser.add_argument("--learning_rate", default=5e-5, type=float,
                         help="The initial learning rate for Adam.")
-    parser.add_argument("--weight_decay", default=0.0, type=float,
+    parser.add_argument("--weight_decay", default=0.01, type=float,
                         help="Weight deay if we apply some.")
     parser.add_argument("--adam_epsilon", default=1e-8, type=float,
                         help="Epsilon for Adam optimizer.")
