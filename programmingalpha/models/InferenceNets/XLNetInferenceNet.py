@@ -26,7 +26,8 @@ class LinkNet(InferenceNet):
     def forward(self, input_ids, token_type_ids=None, labels=None):
         outputs=self.encoder.forward(input_ids, token_type_ids=token_type_ids)
         pooled_output=self.summary(outputs[0])
-        logits = self.softmax(self.classifier(pooled_output) )
+        #logits = self.softmax(self.classifier(pooled_output) )
+        logits = self.classifier(pooled_output) 
 
         if labels is not None:
             loss_fct_classification = CrossEntropyLoss()
