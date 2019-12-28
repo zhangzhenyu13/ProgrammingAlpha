@@ -1,0 +1,23 @@
+{
+    "consumer": {
+        "topic": "docs",
+        "group_id": "docsearcher-group",
+        "bootstrap_servers": [
+            "10.1.1.1:9092",
+            "10.1.1.2:9092",
+            "10.1.1.3:9092"
+        ]
+    },
+    "producer": {
+        "topic": "ranks",
+        "bootstrap_servers": [
+            "10.1.1.:9092",
+            "10.1.1.2:9092",
+            "10.1.1.3:9092"
+        ]
+    },
+    "ServiceName":"Doc Searcher",
+    "es_url": "http://10.1.1.9:9266",
+    "num_works": 20,
+    "doc_size": 50
+}

@@ -1,0 +1,26 @@
+{
+    "consumer": {
+        "topic": "answers",
+        "group_id": "answeralpha-group",
+        "bootstrap_servers": [
+            "10.1.1.1:9092",
+            "10.1.1.2:9092",
+            "10.1.1.3:9092"
+        ]
+    },
+    "producer": {
+        "topic": "portals",
+        "bootstrap_servers": [
+            "10.1.1.:9092",
+            "10.1.1.2:9092",
+            "10.1.1.3:9092"
+        ]
+    },
+    "ServiceName": "Answer Alpha",
+    "model_config": "answerNetModel.json",
+    "question_len": 60,
+    "context_len": 450,
+    "tokenizer": "xlnet",
+    "model": "xlnet",
+    "model_path": "/home/zhangzy/ShareModels/xlnet/base-cased"
+}

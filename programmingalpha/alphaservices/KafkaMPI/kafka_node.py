@@ -18,33 +18,29 @@ class AlpahaKafkaNode(object):
         super().__init__()
         self.args = AlphaConfig.loadConfig( os.path.join( AlphaPathLookUp.ConfigPath, config_file ) )
         #self.is_ready = Event()
-        self.producer=kafka.KafkaProducer(**self.args.producer)
-        self.consumer=kafka.KafkaConsumer(**self.args.consumer)
-        self.topic=self.args.topic
-
-    def push_msg(self, data):
-        msg=json.dumps(data)
-        self.producer.send(topic=self.topic,value=msg)
-
-    def pull_msg(self, time_out=5):
-        msg=self.consumer.poll()
-        data=json.loads(msg)
-        return data
+        self.producer=kafka.KafkaProducer(bootstrap_servers=self.args.producer["servers"],value_serializer= lambda m: json.dumps(m).encode('ascii') )
+        self.consumer=kafka.KafkaConsumer(self.args.consumer["topic"], group_id=self.args.consumer["group_id"], 
+            bootstrap_servers=self.args.consumer["servers"], value_deserializer= lambda m: json.loads(m.decode("ascii")))
 
     def processCore(self, data):
         raise NotImplementedError
+    
+    def push_msg(self, msg):
+        future=self.producer.send(self.args.producer['topic'], msg)
+        try:
+            record_matadata=future.get(timeout=10)
+            logger.info("topic: {}, partition: {}, offset: {}".format(
+                record_matadata.topic, record_matadata.partition, record_matadata.offset
+            ))
+        except KafkaError as e:
+            logger.info("Kafka error: {}".format(e.args))
 
     def start(self):
         logger.info("\n*************{} node is running*************\n".format(self.args.node))
-        time_out=5
-        
-        while True:
+        for msg in self.consumer:
             try:
-                data=self.pull_msg(time_out=time_out)
-                data=self.processCore(data)
+                data=self.processCore(msg)
                 self.push_msg(data)
-                time_out=5
-                time.sleep(time_out)
-            except KafkaError as e:
-                e.with_traceback()
-                time_out*=2
+            except Exception as e:
+                logger.info("kafka node running error: {}".format(e.args))
+    
