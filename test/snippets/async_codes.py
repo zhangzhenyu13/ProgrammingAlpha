@@ -39,6 +39,8 @@ async def buy_tomatos():
         bucket.append(potato)
         print("tomato:",id(potato), "bought" )
 
+
+
 if __name__ == "__main__":
     loop=asyncio.get_event_loop()
     loop.run_until_complete(asyncio.wait([buy_potatos(), buy_tomatos()]))
